@@ -4,6 +4,10 @@ RUN --mount=type=cache,target=/root/.cache \
         python3.11 -m pip install \
             flask
 
+RUN apt-get update \
+ && apt-get install -y \
+        netcat
+
 WORKDIR /work
 ENV PYTHONDONTWRITEBYTECODE=1
 

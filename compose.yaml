@@ -10,6 +10,10 @@ services:
     command:
       - python3.11
       - server.py
+    healthcheck:
+      test: "nc -z localhost 80"
+      interval: 1s
+      retries: 5
 
   test:
     build:
@@ -20,7 +24,7 @@ services:
       - ./tests:/work/tests
     depends_on:
       server:
-        condition: service_started
+        condition: service_healthy
     command:
       - python3.11
       - -m
