@@ -1,0 +1,29 @@
+services:
+
+  server:
+    build:
+      context: .
+      target: server
+    init: true
+    volumes:
+      - ./src:/work
+    command:
+      - python3.11
+      - server.py
+
+  test:
+    build:
+      context: .
+      target: test
+    init: true
+    volumes:
+      - ./tests:/work/tests
+    depends_on:
+      server:
+        condition: service_started
+    command:
+      - python3.11
+      - -m
+      - pytest
+      - -sqx
+      - tests
