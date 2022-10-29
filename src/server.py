@@ -1,3 +1,5 @@
+"""Entrypoint of flask server."""
+
 import logging
 
 from processor import app
