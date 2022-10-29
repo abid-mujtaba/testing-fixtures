@@ -4,10 +4,10 @@ import json
 import requests
 
 
-def test_test_endpoint() -> None:
+def test_test_endpoint(base_url: str) -> None:
     """Test the /test end-point in the server."""
     # GIVEN
-    url = "http://server/test"
+    url = f"{base_url}/test"
 
     # WHEN
     response = requests.get(url, timeout=5)
