@@ -1,6 +1,6 @@
 services:
 
-  database:
+  db-host:
     image: postgres:latest
     environment:
       POSTGRES_PASSWORD: dbpswd
@@ -15,7 +15,9 @@ services:
     volumes:
       - ./src:/work
     depends_on:
-      - database
+      - db-host
+    environment:
+      POSTGRES_PASSWORD: dbpswd
     command:
       - python3.11
       - server.py
@@ -34,6 +36,8 @@ services:
     depends_on:
       server:
         condition: service_healthy
+    environment:
+      POSTGRES_PASSWORD: dbpswd
     command:
       - python3.11
       - -m
