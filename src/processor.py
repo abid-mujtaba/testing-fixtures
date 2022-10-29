@@ -27,8 +27,20 @@ def process_compute() -> Response:
     assert payload
 
     uuid = payload["uuid"]
+    value = payload["input"]
 
     operation = dba.get_operation(uuid)
     logger.info("operation for uuid %s from db: %s", uuid, operation)
 
-    return jsonify({})
+    match operation:
+        case "identity":
+            response = {"result": value}
+
+        case _:
+            response = {
+                "error": {"message": f"Unable to find operation for uuid: {uuid}"}
+            }
+
+    logger.info("Response from /computer: %s", response)
+
+    return jsonify(response)
