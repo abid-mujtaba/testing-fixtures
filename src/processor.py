@@ -36,6 +36,12 @@ def process_compute() -> Response:
         case "identity":
             response = {"result": value}
 
+        case "square":
+            response = {"result": value * value}
+
+        case "cube":
+            response = {"result": value * value * value}
+
         case _:
             response = {
                 "error": {"message": f"Unable to find operation for uuid: {uuid}"}
