@@ -3,7 +3,7 @@
 from functools import partial, wraps
 from typing import Callable, ParamSpec
 
-import dba
+from example.server import dba
 
 
 P = ParamSpec("P")

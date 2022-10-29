@@ -2,7 +2,7 @@
 
 import logging
 
-from processor import app
+from .processor import app
 
 
 if __name__ == "__main__":

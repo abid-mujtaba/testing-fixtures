@@ -1,0 +1,33 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "example.server"
+version = "0.0.1"
+authors = [
+    { name = "Abid H. Mujtaba", email = "abid.naqvi83@gmail.com" }
+]
+description = "Simple flask server to demo tunable fixtures"
+requires-python = ">=3.10"
+dependencies = [
+    "flask",
+    "psycopg[binary]",
+    "types-requests"
+]
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "Operating System :: OS Independent"
+]
+
+[project.optional-dependencies]
+dev = [
+    "black",
+    "mypy",
+    "pylint",
+    "pytest",
+    "requests"
+]
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/example"]

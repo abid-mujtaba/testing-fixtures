@@ -4,22 +4,18 @@ RUN apt-get update \
  && apt-get install -y \
         netcat
 
-RUN --mount=type=cache,target=/root/.cache \
-        python3.11 -m pip install \
-            flask \
-            psycopg[binary]
-
 WORKDIR /work
+
+COPY pyproject.toml /work/
+COPY src /work/src
+
+RUN --mount=type=cache,target=/root/.cache \
+        python3.11 -m pip install -e .
+
 ENV PYTHONDONTWRITEBYTECODE=1
 
 
-FROM python:latest AS test
+FROM server AS test
 
 RUN --mount=type=cache,target=/root/.cache \
-        python3.11 -m pip install \
-            psycopg[binary] \
-            pytest \
-            requests
-
-WORKDIR /work
-ENV PYTHONDONTWRITEBYTECODE=1
+        python3.11 -m pip install -e .[dev]

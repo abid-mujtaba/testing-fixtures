@@ -4,7 +4,7 @@ import logging
 
 from flask import Flask, jsonify, Response, request
 
-import dba
+from . import dba
 
 
 logger = logging.getLogger(__name__)

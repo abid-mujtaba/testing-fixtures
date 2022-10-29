@@ -13,14 +13,15 @@ services:
       target: server
     init: true
     volumes:
-      - ./src:/work
+      - ./src:/work/src
     depends_on:
       - db-host
     environment:
       POSTGRES_PASSWORD: dbpswd
     command:
       - python3.11
-      - server.py
+      - -m
+      - example.server
     healthcheck:
       test: "nc -z localhost 80"
       interval: 1s
@@ -33,7 +34,6 @@ services:
     init: true
     volumes:
       - ./tests:/work/tests
-      - ./src/dba.py:/work/dba.py
     depends_on:
       server:
         condition: service_healthy
