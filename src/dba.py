@@ -16,9 +16,11 @@ Record = dict[str, Any]  # Object returned by cursor SELECT (using dict row)
 
 
 @contextmanager
-def get_cursor() -> Iterator[psycopg.Cursor[Optional[Record]]]:
+def get_cursor(autocommit: bool = False) -> Iterator[psycopg.Cursor[Optional[Record]]]:
     """Create cursor to postgres DB."""
-    conn = psycopg.connect(user=DB_USER, password=DB_PASSWORD, host=DB_HOST)
+    conn = psycopg.connect(
+        autocommit=autocommit, user=DB_USER, password=DB_PASSWORD, host=DB_HOST
+    )
 
     # Yield a cursor that uses a dict row factory
     with conn.cursor(row_factory=psycopg.rows.dict_row) as cursor:
