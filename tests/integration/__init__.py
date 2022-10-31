@@ -1,16 +1,15 @@
 """Shared package utilities for testing."""
 
-from functools import partial, wraps
-from typing import Callable, Iterator, ParamSpec
-
+from typing import Iterator, NewType, ParamSpec
 from example.server import dba
 
 from .tunable_fixture import tunable_fixture
 
 
 P = ParamSpec("P")
+Uuid = NewType("Uuid", int)
 
-UUID = 1234
+UUID: Uuid = Uuid(1234)
 
 
 def inject_operation(uuid: int, operation_name: str) -> None:
@@ -44,8 +43,8 @@ def uninject_operation(uuid: int) -> None:
         cursor.execute(query, {"uuid": uuid})
 
 
-@tunable_fixture(inject="uuid")
-def operation(operation_name: str) -> Iterator[int]:
+@tunable_fixture
+def operation(operation_name: str) -> Iterator[Uuid]:
     """Tunable fixture that injects specified operation_name into DB and yield uuid."""
     try:
         inject_operation(UUID, operation_name)

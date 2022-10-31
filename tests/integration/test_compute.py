@@ -3,11 +3,11 @@
 import json
 import requests
 
-from . import operation
+from . import operation, Uuid
 
 
 @operation("identity")
-def test_compute_identity(base_url: str, uuid: int) -> None:
+def test_compute_identity(uuid: Uuid, base_url: str) -> None:
     """Test the /compute end-point for a user with identity operation."""
     # GIVEN
     payload = {"uuid": uuid, "input": 9}
@@ -23,7 +23,7 @@ def test_compute_identity(base_url: str, uuid: int) -> None:
 
 
 @operation("square")
-def test_compute_square(base_url: str, uuid: int) -> None:
+def test_compute_square(uuid: Uuid, base_url: str) -> None:
     """Test the /compute end-point for a user with square operation."""
     # GIVEN
     payload = {"uuid": uuid, "input": 9}
@@ -39,7 +39,7 @@ def test_compute_square(base_url: str, uuid: int) -> None:
 
 
 @operation("cube")
-def test_compute_cube(base_url: str, uuid: int) -> None:
+def test_compute_cube(uuid: Uuid, base_url: str) -> None:
     """Test the /compute end-point for a user with cube operation."""
     # GIVEN
     payload = {"uuid": uuid, "input": 9}
