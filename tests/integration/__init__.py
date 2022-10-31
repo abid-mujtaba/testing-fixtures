@@ -1,9 +1,11 @@
 """Shared package utilities for testing."""
 
 from functools import partial, wraps
-from typing import Callable, ParamSpec
+from typing import Callable, Iterator, ParamSpec
 
 from example.server import dba
+
+from .tunable_fixture import tunable_fixture
 
 
 P = ParamSpec("P")
@@ -42,25 +44,37 @@ def uninject_operation(uuid: int) -> None:
         cursor.execute(query, {"uuid": uuid})
 
 
-def operation(operation_name: str) -> Callable[[Callable[P, None]], Callable[P, None]]:
-    """Generate a decorator that injects specified operation into DB."""
+@tunable_fixture(inject="uuid")
+def operation(operation_name: str) -> Iterator[int]:
+    """Tunable fixture that injects specified operation_name into DB and yield uuid."""
+    try:
+        inject_operation(UUID, operation_name)
 
-    def decorator(func: Callable[P, None]) -> Callable[P, None]:
-        """A decorator that injects operation into DB and associated uuid into test function."""
+        yield UUID
 
-        new_func = partial(func, uuid=UUID)
+    finally:
+        uninject_operation(UUID)
 
-        @wraps(new_func)
-        def inner(*args: P.args, **kwargs: P.kwargs) -> None:
-            """Inner function of decorator for wrapping."""
-            try:
-                inject_operation(UUID, operation_name)
 
-                new_func(*args, **kwargs)
+# def operation(operation_name: str) -> Callable[[Callable[P, None]], Callable[P, None]]:
+#     """Generate a decorator that injects specified operation into DB."""
 
-            finally:
-                uninject_operation(UUID)
+#     def decorator(func: Callable[P, None]) -> Callable[P, None]:
+#         """A decorator that injects operation into DB and associated uuid into test function."""
 
-        return inner
+#         new_func = partial(func, uuid=UUID)
 
-    return decorator
+#         @wraps(new_func)
+#         def inner(*args: P.args, **kwargs: P.kwargs) -> None:
+#             """Inner function of decorator for wrapping."""
+#             try:
+#                 inject_operation(UUID, operation_name)
+
+#                 new_func(*args, **kwargs)
+
+#             finally:
+#                 uninject_operation(UUID)
+
+#         return inner
+
+#     return decorator
