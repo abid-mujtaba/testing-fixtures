@@ -3,8 +3,15 @@
 from contextlib import contextmanager
 from functools import partial, wraps
 
+from typing import Callable, Concatenate, Iterator, ParamSpec, TypeVar
 
-def fixture(fixture_generator):
+T = ParamSpec("T")  # Test function parameters
+Y = TypeVar("Y")  # Type of value yielded by fixture generator to be injected into test
+
+
+def fixture(
+    fixture_generator: Callable[[], Iterator[Y]],
+) -> Callable[[Callable[Concatenate[Y, T], None]], Callable[T, None]]:
     """
     Convert a one-shot generator into a test fixture.
 
@@ -18,7 +25,9 @@ def fixture(fixture_generator):
     # manager to convert it into a fixture
     fixture_context_manager = contextmanager(fixture_generator)
 
-    def _test_decorator(test_function):
+    def _test_decorator(
+        test_function: Callable[Concatenate[Y, T], None]
+    ) -> Callable[T, None]:
         """The returned decorator that will be applied to test functions."""
 
         # Create throwaway partial function which removes the injected variable
@@ -28,12 +37,12 @@ def fixture(fixture_generator):
         temp_test_function_for_signature = partial(test_function, None)
 
         @wraps(temp_test_function_for_signature)
-        def _wrapped_test_function(*tf_args, **tf_kwargs):
+        def _wrapped_test_function(*t_args: T.args, **t_kwargs: T.kwargs) -> None:
             """The function that will replace the test function (by wrapping it)."""
             # fg_value: The value yielded by the fixture_generator as defined by
             #           the user
             with fixture_context_manager() as fg_value:
-                return test_function(fg_value, *tf_args, **tf_kwargs)
+                return test_function(fg_value, *t_args, **t_kwargs)
 
         return _wrapped_test_function
 
