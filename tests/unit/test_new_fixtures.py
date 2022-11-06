@@ -4,6 +4,8 @@ from .utils import fixture_a, TypeA
 from .utils import fixture_b, TypeB1, TypeB2, TypeB3
 from .utils import fixture_c, TypeC
 from .utils import fixture_d, TypeD1, TypeD2
+from .utils import fixture_e, TypeE
+from .utils import fixture_f, TypeF1, TypeF2
 
 
 @fixture_a()
@@ -39,6 +41,22 @@ def test_a_and_b(val_a: TypeA, val_b: TypeB3) -> None:
     """Test application of two fixtures to one test."""
     assert val_a == "Value A"
     assert val_b == "Injected into fixture_b 88 and 12.3"
+
+
+@fixture_e()
+def test_e(val_e: TypeE) -> None:
+    """Test mutation of injected state by fixture_e."""
+    assert val_e == 1
+
+
+@fixture_f(TypeF1(42))  # pylint: disable=E1120
+@fixture_e()
+def test_fixture_f(val_e: TypeE, val_f: TypeF2) -> None:
+    """Test fixture_f and double injecion of fixture_e."""
+    assert val_e == 1
+    assert val_f == (
+        "Injected into fixture_f values from fixture_e 1 and from test site 42"
+    )
 
 
 # @fixture_b(TypeB("Value B"), inject=False)
