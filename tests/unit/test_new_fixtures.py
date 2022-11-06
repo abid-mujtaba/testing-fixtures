@@ -33,6 +33,14 @@ def test_d(val_d: TypeD2) -> None:
     )
 
 
+@fixture_b(TypeB1(88), TypeB2(12.3))
+@fixture_a()
+def test_a_and_b(val_a: TypeA, val_b: TypeB3) -> None:
+    """Test application of two fixtures to one test."""
+    assert val_a == "Value A"
+    assert val_b == "Injected into fixture_b 88 and 12.3"
+
+
 # @fixture_b(TypeB("Value B"), inject=False)
 # def test_b_no_injection() -> None:
 #     """The value yielded by fixture_b is NOT injected into the test."""
