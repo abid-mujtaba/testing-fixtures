@@ -31,3 +31,8 @@ dev = [
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/example"]
+
+[tool.pylint.'MESSAGE CONTROL']
+disable = [
+    "invalid-name"
+]
