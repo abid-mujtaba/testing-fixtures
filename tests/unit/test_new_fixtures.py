@@ -6,9 +6,8 @@ from .utils import fixture_a, Ao
 from .utils import fixture_b, Bi1, Bi2, Bo
 from .utils import fixture_c, Co
 from .utils import fixture_d, Di, Do
-
-# from .utils import fixture_e, TypeE
-# from .utils import fixture_f, TypeF1, TypeF2
+from .utils import fixture_e, Eo
+from .utils import fixture_f, Fi, Fo
 
 
 @fixture_a()
@@ -43,21 +42,18 @@ def test_d(d: Do) -> None:
     assert d == {"b": {"b1": 123, "b2": 1.23}, "d": True}
 
 
-# @fixture_e()
-# def test_e(val_e: TypeE) -> None:
-#     """Test mutation of injected state by fixture_e."""
-#     assert val_e == 1
+@fixture_e()
+def test_e(e: Eo) -> None:
+    """Test mutation of injected state by fixture_e."""
+    assert e == 1
 
 
-# @pytest.mark.skip
-# @fixture_f(TypeF1(42))  # pylint: disable=E1120
-# @fixture_e()
-# def test_fixture_f(val_e: TypeE, val_f: TypeF2) -> None:
-#     """Test fixture_f and double injecion of fixture_e."""
-#     assert val_e == 1
-#     assert val_f == (
-#         "Injected into fixture_f values from fixture_e 1 and from test site 42"
-#     )
+@fixture_f(Fi(42))  # pylint: disable=E1120
+@fixture_e()
+def test_fixture_f(e: Eo, f: Fo) -> None:
+    """Test fixture_f and double injecion of fixture_e."""
+    assert e == 1
+    assert f == {"e": 1, "f": 42}
 
 
 # # @fixture_b(TypeB("Value B"), inject=False)

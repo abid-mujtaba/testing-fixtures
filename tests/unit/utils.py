@@ -69,27 +69,34 @@ def fixture_d(b: Bo, d: Di) -> Iterator[Do]:
     yield Do(b=b, d=d)
 
 
-# TypeE = NewType("TypeE", int)
-# VALUE_E = {"value": 0}
+Eo = NewType("Eo", int)
+VALUE_E = {"value": 0}
 
 
-# @fixture
-# def fixture_e() -> Iterator[TypeE]:
-#     """A fixture that mutates the inject value before yielding it."""
-#     VALUE_E["value"] += 1
+@fixture
+def fixture_e() -> Iterator[Eo]:
+    """A fixture that mutates the inject value before yielding it, then unmutates it."""
+    print("Incrementing e")
+    VALUE_E["value"] += 1
 
-#     yield TypeE(VALUE_E["value"])
+    yield Eo(VALUE_E["value"])
+
+    print("Decrementing e")
+    VALUE_E["value"] -= 1
 
 
-# TypeF1 = NewType("TypeF1", int)
-# TypeF2 = NewType("TypeF2", str)
+Fi = NewType("Fi", int)
 
 
-# @fixture
-# @fixture_e()
-# def fixture_f(val_e: TypeE, val_f: TypeF1) -> Iterator[TypeF2]:
-#     """A fixture that gets state from both test site and fixture_e (mutating)."""
-#     yield TypeF2(
-#         f"Injected into fixture_f values from fixture_e {val_e} and "
-#         f"from test site {val_f}"
-#     )
+class Fo(TypedDict):
+    """Output type for fixture_f encapsulating injection from fixture_e and test site"""
+
+    e: Eo
+    f: Fi
+
+
+@fixture
+@fixture_e()
+def fixture_f(e: Eo, f: Fi) -> Iterator[Fo]:
+    """A fixture that gets state from both test site and fixture_e (mutating)."""
+    yield Fo(e=e, f=f)
