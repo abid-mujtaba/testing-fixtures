@@ -2,17 +2,17 @@
 
 import pytest
 
-from .utils import fixture_a, A
+from .utils import fixture_a, Ao
 from .utils import fixture_b, Bi1, Bi2, Bo
+from .utils import fixture_c, Co
+from .utils import fixture_d, Di, Do
 
-# from .utils import fixture_c, TypeC
-# from .utils import fixture_d, TypeD1, TypeD2
 # from .utils import fixture_e, TypeE
 # from .utils import fixture_f, TypeF1, TypeF2
 
 
 @fixture_a()
-def test_a(a: A) -> None:
+def test_a(a: Ao) -> None:
     """Test fixture_a in isolation."""
     assert a == "a"
 
@@ -23,27 +23,24 @@ def test_b(b: Bo) -> None:
     assert b == {"b1": 42, "b2": 3.14}
 
 
-# @fixture_c()  # pylint: disable=E1120
-# def test_c(val_c: TypeC) -> None:
-#     """Test fixture_c which receives values from fixture_b."""
-#     assert val_c == "Injected into fixture_c: Injected into fixture_b 13 and 1.44"
+@fixture_b(Bi1(88), Bi2(12.3))
+@fixture_a()
+def test_a_and_b(a: Ao, b: Bo) -> None:
+    """Test application of two fixtures to one test."""
+    assert a == "a"
+    assert b == {"b1": 88, "b2": 12.3}
 
 
-# @fixture_d(TypeD1(True))  # pylint: disable=E1120
-# def test_d(val_d: TypeD2) -> None:
-#     """Test fixture_d which receives values from both fixture_b and the test site."""
-#     assert (
-#         val_d == "Injected into fixture_d from both b: "
-#         "Injected into fixture_b 123 and 1.23 and test site: True"
-#     )
+@fixture_c()  # pylint: disable=E1120
+def test_c(c: Co) -> None:
+    """Test fixture_c which receives values from fixture_b."""
+    assert c == {"c": {"b1": 13, "b2": 1.44}}
 
 
-# @fixture_b(TypeB1(88), TypeB2(12.3))
-# @fixture_a()
-# def test_a_and_b(val_a: TypeA, val_b: TypeB3) -> None:
-#     """Test application of two fixtures to one test."""
-#     assert val_a == "Value A"
-#     assert val_b == "Injected into fixture_b 88 and 12.3"
+@fixture_d(Di(True))  # pylint: disable=E1120
+def test_d(d: Do) -> None:
+    """Test fixture_d which receives values from both fixture_b and the test site."""
+    assert d == {"b": {"b1": 123, "b2": 1.23}, "d": True}
 
 
 # @fixture_e()
