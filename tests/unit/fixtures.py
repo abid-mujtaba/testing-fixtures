@@ -8,11 +8,13 @@ from typing import Callable, Concatenate, Iterator, ParamSpec, TypeVar
 D = ParamSpec("D")  # Parameters injected into fixture definition
 T = ParamSpec("T")  # Test function parameters
 Y = TypeVar("Y")  # Type of value yielded by fixture generator to be injected into test
+R = TypeVar("R")  # Return value of the function decorated by the fixture.
+#                 # Will be None for tests.
 
 
 def fixture(
     fixture_generator: Callable[D, Iterator[Y]],
-) -> Callable[D, Callable[[Callable[Concatenate[Y, T], None]], Callable[T, None]]]:
+) -> Callable[D, Callable[[Callable[Concatenate[Y, T], R]], Callable[T, R]]]:
     """
     Convert a one-shot generator into a test fixture.
 
@@ -31,7 +33,7 @@ def fixture(
 
     def _parametrized_test_decorator(
         *d_args: D.args, **d_kwargs: D.kwargs
-    ) -> Callable[[Callable[Concatenate[Y, T], None]], Callable[T, None]]:
+    ) -> Callable[[Callable[Concatenate[Y, T], R]], Callable[T, R]]:
         """
         A fixture definition that expected arguments.
 
@@ -39,8 +41,8 @@ def fixture(
         """
 
         def _test_decorator(
-            test_function: Callable[Concatenate[Y, T], None]
-        ) -> Callable[T, None]:
+            test_function: Callable[Concatenate[Y, T], R]
+        ) -> Callable[T, R]:
             """The returned decorator that will be applied to test functions."""
 
             # Create throwaway partial function which removes the injected variable
@@ -50,7 +52,7 @@ def fixture(
             temp_test_function_for_signature = partial(test_function, None)
 
             @wraps(temp_test_function_for_signature)
-            def _wrapped_test_function(*t_args: T.args, **t_kwargs: T.kwargs) -> None:
+            def _wrapped_test_function(*t_args: T.args, **t_kwargs: T.kwargs) -> R:
                 """The function that will replace the test function (by wrapping it)."""
                 # fg_value: The value yielded by the fixture_generator as defined by
                 #           the user

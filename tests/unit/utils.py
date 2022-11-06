@@ -6,9 +6,12 @@ from .fixtures import fixture
 
 
 TypeA = NewType("TypeA", str)
+
 TypeB1 = NewType("TypeB1", int)
 TypeB2 = NewType("TypeB2", float)
 TypeB3 = NewType("TypeB3", str)
+
+TypeC = NewType("TypeC", str)
 
 
 @fixture
@@ -23,8 +26,8 @@ def fixture_b(val_b1: TypeB1, val_b2: TypeB2) -> Iterator[TypeB3]:
     yield TypeB3(f"Injected into fixture b {val_b1} and {val_b2}")
 
 
-# @fixture
-# @fixture_b(TypeB("Value B"))
-# def fixture_c(val_b: TypeB) -> Iterator[TypeC]:
-#     """A fixture that takes an injected value from ANOTHER fixture."""
-#     yield TypeC(f"Injected into C: {val_b}")
+@fixture
+@fixture_b(TypeB1(13), TypeB2(1.44))
+def fixture_c(val_b: TypeB3) -> Iterator[TypeC]:
+    """A fixture that takes an injected value from ANOTHER fixture."""
+    yield TypeC(f"Injected into fixture_C: {val_b}")
