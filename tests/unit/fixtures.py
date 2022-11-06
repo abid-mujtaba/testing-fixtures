@@ -31,6 +31,7 @@ def fixture(
     # manager to convert it into a fixture
     fixture_context_manager = contextmanager(fixture_generator)
 
+    @wraps(fixture_context_manager)
     def _parametrized_test_decorator(
         *d_args: D.args, **d_kwargs: D.kwargs
     ) -> Callable[[Callable[Concatenate[Y, T], R]], Callable[T, R]]:
