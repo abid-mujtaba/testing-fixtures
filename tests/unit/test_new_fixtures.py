@@ -1,5 +1,7 @@
 """Test the new fixtures."""
 
+import pytest
+
 from .utils import fixture_a, TypeA
 from .utils import fixture_b, TypeB1, TypeB2, TypeB3
 from .utils import fixture_c, TypeC
@@ -49,6 +51,7 @@ def test_e(val_e: TypeE) -> None:
     assert val_e == 1
 
 
+@pytest.mark.skip
 @fixture_f(TypeF1(42))  # pylint: disable=E1120
 @fixture_e()
 def test_fixture_f(val_e: TypeE, val_f: TypeF2) -> None:
