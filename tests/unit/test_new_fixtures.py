@@ -5,8 +5,7 @@ from .utils import fixture_b, Bi1, Bi2, Bo
 from .utils import fixture_c, Co
 from .utils import fixture_d, Di, Do
 from .utils import fixture_e, Eo
-
-# from .utils import fixture_f, Fi, Fo
+from .utils import fixture_f, Fi, Fo
 
 
 @fixture_a()
@@ -57,16 +56,16 @@ def test_e(e: Eo) -> None:
     assert e == 1
 
 
-# @fixture_f(Fi(42))  # pylint: disable=E1120
-# @fixture_e()
-# def test_fixture_f(e: Eo, f: Fo) -> None:
-#     """Test fixture_f and double injecion of fixture_e."""
-#     print("Entering test f")
+@fixture_f(Fi(42))  # pylint: disable=E1120
+@fixture_e()
+def test_fixture_f(e: Eo, f: Fo) -> None:
+    """Test fixture_f and double injecion of fixture_e."""
+    print("Entering test f")
 
-#     assert e == 1
-#     assert f == {"e": 1, "f": 42}
+    assert e == 1
+    assert f == {"e": 1, "f": 42}
 
-#     print("Leaving test f")
+    print("Leaving test f")
 
 
 # # @fixture_b(TypeB("Value B"), inject=False)

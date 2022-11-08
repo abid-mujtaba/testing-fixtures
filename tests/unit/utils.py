@@ -104,17 +104,19 @@ def fixture_e() -> FixtureDefinition[Eo]:
 Fi = NewType("Fi", int)
 
 
-# class Fo(TypedDict):
-#     """Output type for fixture_f encapsulating injection from fixture_e and test site"""
+class Fo(TypedDict):
+    """Output type for fixture_f encapsulating injection from fixture_e and test site"""
 
-#     e: Eo
-#     f: Fi
+    e: Eo
+    f: Fi
 
 
-# @fixture
-# @compose(fixture_e())
-# def fixture_f(e: Eo, f: Fi) -> Iterator[Fo]:
-#     """A fixture that gets state from both test site and fixture_e (mutating)."""
-#     print("Entering f")
-#     yield Fo(e=e, f=f)
-#     print("Leaving f")
+@fixture
+@compose(fixture_e())
+def fixture_f(e: Eo, f: Fi) -> FixtureDefinition[Fo]:
+    """A fixture that gets state from both test site and fixture_e (mutating)."""
+    print("Entering f")
+    try:
+        yield Fo(e=e, f=f)
+    finally:
+        print("Leaving f")
