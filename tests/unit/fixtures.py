@@ -1,23 +1,27 @@
 """Implementation of new fixtures module."""
 
-# from contextlib import contextmanager
 from functools import partial, wraps
 
 from types import TracebackType
 from typing import (
     Callable,
     Concatenate,
+    Generator,
     Generic,
-    Iterator,
     Optional,
     ParamSpec,
     Type,
     TypeVar,
 )
 
+
 D = ParamSpec("D")  # Parameters injected into fixture definition
 T = ParamSpec("T")  # Test function parameters
 Y = TypeVar("Y")  # Type of value yielded by fixture generator to be injected into test
+
+# Fixture definitions are Generators (not just Iterators) since they need to support
+# throwing exceptions to the yield statement
+FixtureDefinition = Generator[Y, None, None]
 
 
 class Fixture(Generic[Y]):
@@ -30,11 +34,19 @@ class Fixture(Generic[Y]):
     Instances are created from a single generator passed in. No other arguments.
     The instantiating generator MUST be single-shot (single yield) otherwise a
     RuntimeError will be raised.
+
+    The __enter__ and __exit__ have been copied from contextlib._GeneratorContextManager
+    (the underlying class of contextlib.contextmanager) with minimal alteration to
+    match the definition of __init__.
+
+    This allows for Fixture to behave similarly to contextlib.contextmanager with the
+    important difference that the decorator does an injection of the yielded value
+    rather than ignoring it completely.
     """
 
     def __init__(
         self,
-        generator_func: Callable[D, Iterator[Y]],
+        generator_func: Callable[D, FixtureDefinition[Y]],
         *d_args: D.args,
         **d_kwargs: D.kwargs
     ):
@@ -49,27 +61,57 @@ class Fixture(Generic[Y]):
         self._generator = self._func(*d_args, **d_kwargs)
 
     def __enter__(self) -> Y:
-        """Execute up to the first yield in the generator and return that value."""
         try:
             return next(self._generator)
-
-        except StopIteration as err:
-            raise RuntimeError("Generator failed to yield first value") from err
+        except StopIteration:
+            raise RuntimeError("generator didn't yield") from None
 
     def __exit__(
         self, typ: Optional[Type[Exception]], value: Exception, traceback: TracebackType
     ) -> bool:
-        """Execute to the end of the ideally one-shot generator."""
-        try:
-            next(self._generator)
-
-        except StopIteration:
-            pass
-
+        if typ is None:
+            try:
+                next(self._generator)
+            except StopIteration:
+                return False
+            else:
+                raise RuntimeError("generator didn't stop")
         else:
-            raise RuntimeError("Generator failed to stop, yielded more than value.")
-
-        return not bool(typ)  # return True if no exception is passed in
+            if value is None:
+                # Need to force instantiation so we can reliably
+                # tell if we get the same exception back
+                value = typ()
+            try:
+                self._generator.throw(typ, value, traceback)
+            except StopIteration as exc:
+                # Suppress StopIteration *unless* it's the same exception that
+                # was passed to throw().  This prevents a StopIteration
+                # raised inside the "with" statement from being suppressed.
+                return exc is not value
+            except RuntimeError as exc:
+                # Don't re-raise the passed in exception. (issue27122)
+                if exc is value:
+                    return False
+                # Avoid suppressing if a StopIteration exception
+                # was passed to throw() and later wrapped into a RuntimeError
+                # (see PEP 479 for sync generators; async generators also
+                # have this behavior). But do this only if the exception wrapped
+                # by the RuntimeError is actually Stop(Async)Iteration (see
+                # issue29692).
+                if isinstance(value, StopIteration) and exc.__cause__ is value:
+                    return False
+                raise
+            except BaseException as exc:  # pylint: disable=W0703
+                # only re-raise if it's *not* the exception that was
+                # passed to throw(), because __exit__() must not raise
+                # an exception unless __exit__() itself failed.  But throw()
+                # has to raise the exception to signal propagation, so this
+                # fixes the impedance mismatch between the throw() protocol
+                # and the __exit__() protocol.
+                if exc is not value:
+                    raise
+                return False
+            raise RuntimeError("generator didn't stop after throw()")
 
     def __call__(
         self, test_function: Callable[Concatenate[Y, T], None]
@@ -100,7 +142,7 @@ class Fixture(Generic[Y]):
 
 
 def fixture(
-    generator_func: Callable[D, Iterator[Y]],
+    generator_func: Callable[D, FixtureDefinition[Y]],
 ) -> Callable[D, Fixture[Y]]:
     """
     Convert a one-shot generator func, which is the fixture defn, into a test fixture.
@@ -136,7 +178,10 @@ Z = TypeVar("Z")
 
 def compose(
     fixture_: Fixture[Y],
-) -> Callable[[Callable[Concatenate[Y, D], Iterator[Z]]], Callable[D, Iterator[Z]]]:
+) -> Callable[
+    [Callable[Concatenate[Y, D], FixtureDefinition[Z]]],
+    Callable[D, FixtureDefinition[Z]],
+]:
     """
     Take a fixture and return a decorator for fixture definitions.
 
@@ -145,14 +190,14 @@ def compose(
     """
 
     def _decorator(
-        fixture_definition: Callable[Concatenate[Y, D], Iterator[Z]]
-    ) -> Callable[D, Iterator[Z]]:
+        fixture_definition: Callable[Concatenate[Y, D], FixtureDefinition[Z]]
+    ) -> Callable[D, FixtureDefinition[Z]]:
         """Decorator for fixture defns that injects value from composed fixture."""
 
         # with fixture as yielded_value:
         #     return partial(fixture_definition, yielded_value)
 
-        def _inner(*d_args: D.args, **d_kwargs: D.kwargs) -> Iterator[Z]:
+        def _inner(*d_args: D.args, **d_kwargs: D.kwargs) -> FixtureDefinition[Z]:
             """
             Replacement for fixture defintion.
 

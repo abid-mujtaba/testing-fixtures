@@ -1,15 +1,15 @@
 """Define fixtures for these tests."""
 
-from typing import Iterator, NewType, TypedDict
+from typing import NewType, TypedDict
 
-from .fixtures import compose, fixture
+from .fixtures import compose, fixture, FixtureDefinition
 
 
 Ao = NewType("Ao", str)
 
 
 @fixture
-def fixture_a() -> Iterator[Ao]:
+def fixture_a() -> FixtureDefinition[Ao]:
     """A simple fixture that yields a string."""
     print("Entering a")
 
@@ -30,7 +30,7 @@ class Bo(TypedDict):
 
 
 @fixture
-def fixture_b(b1: Bi1, b2: Bi2) -> Iterator[Bo]:
+def fixture_b(b1: Bi1, b2: Bi2) -> FixtureDefinition[Bo]:
     """A fixture that takes injected value from the test function decoration."""
     print("Entering b")
 
@@ -47,7 +47,7 @@ class Co(TypedDict):
 
 @fixture
 @compose(fixture_b(Bi1(13), Bi2(1.44)))
-def fixture_c(b: Bo) -> Iterator[Co]:
+def fixture_c(b: Bo) -> FixtureDefinition[Co]:
     """A fixture that takes an injected value from ANOTHER fixture."""
     print("Entering c")
 
@@ -72,7 +72,7 @@ class Do(TypedDict):
 
 @fixture
 @compose(fixture_b(Bi1(123), Bi2(1.23)))
-def fixture_d(b: Bo, d: Di) -> Iterator[Do]:
+def fixture_d(b: Bo, d: Di) -> FixtureDefinition[Do]:
     """
     A fixture that takes injected value from two places.
 
@@ -90,7 +90,7 @@ VALUE_E = {"value": 0}
 
 
 @fixture
-def fixture_e() -> Iterator[Eo]:
+def fixture_e() -> FixtureDefinition[Eo]:
     """A fixture that mutates the inject value before yielding it, then unmutates it."""
     print("Entering e")
     VALUE_E["value"] += 1
