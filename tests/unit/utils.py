@@ -56,29 +56,33 @@ def fixture_c(b: Bo) -> Iterator[Co]:
     print("Leaving c")
 
 
-# Di = NewType("Di", bool)
+Di = NewType("Di", bool)
 
 
-# class Do(TypedDict):
-#     """
-#     Output type for fixture_d which contains injection from two locations.
+class Do(TypedDict):
+    """
+    Output type for fixture_d which contains injection from two locations.
 
-#     Both fixture_b and test definition site.
-#     """
+    Both fixture_b and test definition site.
+    """
 
-#     b: Bo
-#     d: Di
+    b: Bo
+    d: Di
 
 
-# @fixture
-# @fixture_b(Bi1(123), Bi2(1.23))
-# def fixture_d(b: Bo, d: Di) -> Iterator[Do]:
-#     """
-#     A fixture that takes injected value from two places.
+@fixture
+@compose(fixture_b(Bi1(123), Bi2(1.23)))
+def fixture_d(b: Bo, d: Di) -> Iterator[Do]:
+    """
+    A fixture that takes injected value from two places.
 
-#     From both the test function site AND from ANOTHER fixture.
-#     """
-#     yield Do(b=b, d=d)
+    From both the test function site AND from ANOTHER fixture.
+    """
+    print("Entering d")
+
+    yield Do(b=b, d=d)
+
+    print("Leaving d")
 
 
 # Eo = NewType("Eo", int)

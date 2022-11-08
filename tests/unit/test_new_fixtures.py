@@ -3,8 +3,8 @@
 from .utils import fixture_a, Ao
 from .utils import fixture_b, Bi1, Bi2, Bo
 from .utils import fixture_c, Co
+from .utils import fixture_d, Di, Do
 
-# from .utils import fixture_d, Di, Do
 # from .utils import fixture_e, Eo
 # from .utils import fixture_f, Fi, Fo
 
@@ -45,10 +45,10 @@ def test_c(c: Co) -> None:
     assert c == {"c": {"b1": 13, "b2": 1.44}}
 
 
-# @fixture_d(Di(True))  # pylint: disable=E1120
-# def test_d(d: Do) -> None:
-#     """Test fixture_d which receives values from both fixture_b and the test site."""
-#     assert d == {"b": {"b1": 123, "b2": 1.23}, "d": True}
+@fixture_d(Di(True))  # pylint: disable=E1120
+def test_d(d: Do) -> None:
+    """Test fixture_d which receives values from both fixture_b and the test site."""
+    assert d == {"b": {"b1": 123, "b2": 1.23}, "d": True}
 
 
 # @fixture_e()
