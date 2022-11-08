@@ -111,8 +111,11 @@ class Fo(TypedDict):
     f: Fi
 
 
+FIX_E = fixture_e()
+
+
 @fixture
-@compose(fixture_e())
+@compose(FIX_E)
 def fixture_f(e: Eo, f: Fi) -> FixtureDefinition[Fo]:
     """A fixture that gets state from both test site and fixture_e (mutating)."""
     print("Entering f")

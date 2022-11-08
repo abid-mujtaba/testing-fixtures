@@ -1,3 +1,4 @@
+# pylint: disable=E1120
 """Test the new fixtures."""
 
 from .utils import fixture_a, Ao
@@ -5,7 +6,7 @@ from .utils import fixture_b, Bi1, Bi2, Bo
 from .utils import fixture_c, Co
 from .utils import fixture_d, Di, Do
 from .utils import fixture_e, Eo
-from .utils import fixture_f, Fi, Fo
+from .utils import FIX_E, fixture_f, Fi, Fo
 
 
 @fixture_a()
@@ -38,13 +39,13 @@ def test_a_and_b(a: Ao, b: Bo) -> None:
     print("Leaving test a_and_b")
 
 
-@fixture_c()  # pylint: disable=E1120
+@fixture_c()
 def test_c(c: Co) -> None:
     """Test fixture_c which receives values from fixture_b."""
     assert c == {"c": {"b1": 13, "b2": 1.44}}
 
 
-@fixture_d(Di(True))  # pylint: disable=E1120
+@fixture_d(Di(True))
 def test_d(d: Do) -> None:
     """Test fixture_d which receives values from both fixture_b and the test site."""
     assert d == {"b": {"b1": 123, "b2": 1.23}, "d": True}
@@ -56,8 +57,8 @@ def test_e(e: Eo) -> None:
     assert e == 1
 
 
-@fixture_f(Fi(42))  # pylint: disable=E1120
-@fixture_e()
+@fixture_f(Fi(42))
+@FIX_E
 def test_fixture_f(e: Eo, f: Fo) -> None:
     """Test fixture_f and double injecion of fixture_e."""
     print("Entering test f")

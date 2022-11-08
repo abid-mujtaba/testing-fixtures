@@ -36,10 +36,11 @@ class Fixture(Generic[Y]):
     RuntimeError will be raised.
 
     The __enter__ and __exit__ have been copied from contextlib._GeneratorContextManager
-    (the underlying class of contextlib.contextmanager) with minimal alteration to
-    match the definition of __init__.
+    (the underlying class of contextlib.contextmanager) and then altered to both
+    match the definition of __init__ AND
+    to make the context manager BOTH reentrant and reusable.
 
-    This allows for Fixture to behave similarly to contextlib.contextmanager with the
+    The Fixture behaves similarly to contextlib.contextmanager with the
     important difference that the decorator does an injection of the yielded value
     rather than ignoring it completely.
     """
@@ -58,24 +59,45 @@ class Fixture(Generic[Y]):
         Additionally pass in args and kwargs accepted by the generator_func.
         """
         self._func = generator_func
-        self._generator = self._func(*d_args, **d_kwargs)
+        self._args = d_args
+        self._kwargs = d_kwargs
+
+        self._entries = 0  # Keep track of rentrance
+        # self._generator = self._func(*d_args, **d_kwargs)
 
     def __enter__(self) -> Y:
-        try:
-            return next(self._generator)
-        except StopIteration:
-            raise RuntimeError("generator didn't yield") from None
+        self._entries += 1
 
-    def __exit__(
+        if self._entries == 1:  # First entry
+            self._generator = self._func(  # pylint: disable=W0201
+                *self._args, **self._kwargs
+            )
+
+            try:
+                self._value = next(self._generator)  # pylint: disable=W0201
+                return self._value
+
+            except StopIteration:
+                raise RuntimeError("generator didn't yield") from None
+
+        else:
+            return self._value
+
+    def __exit__(  # pylint: disable=R0912
         self, typ: Optional[Type[Exception]], value: Exception, traceback: TracebackType
     ) -> bool:
+        self._entries -= 1
+
         if typ is None:
-            try:
-                next(self._generator)
-            except StopIteration:
-                return False
+            if self._entries == 0:  # Last exit (in rentrance) so finish up generator
+                try:
+                    next(self._generator)
+                except StopIteration:
+                    return False
+                else:
+                    raise RuntimeError("generator didn't stop")
             else:
-                raise RuntimeError("generator didn't stop")
+                return False
         else:
             if value is None:
                 # Need to force instantiation so we can reliably
