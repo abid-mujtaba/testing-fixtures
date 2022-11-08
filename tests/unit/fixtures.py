@@ -129,3 +129,41 @@ def fixture(
         return Fixture(generator_func, *d_args, **d_kwargs)
 
     return _parametrized_test_decorator
+
+
+Z = TypeVar("Z")
+
+
+def compose(
+    fixture_: Fixture[Y],
+) -> Callable[[Callable[Concatenate[Y, D], Iterator[Z]]], Callable[D, Iterator[Z]]]:
+    """
+    Take a fixture and return a decorator for fixture definitions.
+
+    Injects a first argument into the fixture definition returning a simplified
+    definition (generator function).
+    """
+
+    def _decorator(
+        fixture_definition: Callable[Concatenate[Y, D], Iterator[Z]]
+    ) -> Callable[D, Iterator[Z]]:
+        """Decorator for fixture defns that injects value from composed fixture."""
+
+        # with fixture as yielded_value:
+        #     return partial(fixture_definition, yielded_value)
+
+        def _inner(*d_args: D.args, **d_kwargs: D.kwargs) -> Iterator[Z]:
+            """
+            Replacement for fixture defintion.
+
+            The first value is injected from the composed fixture resulting in a
+            simpler definition (generator function).
+            """
+
+            with fixture_ as yielded_value:
+                for value in fixture_definition(yielded_value, *d_args, **d_kwargs):
+                    yield value
+
+        return _inner
+
+    return _decorator

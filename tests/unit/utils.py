@@ -2,7 +2,7 @@
 
 from typing import Iterator, NewType, TypedDict
 
-from .fixtures import fixture
+from .fixtures import compose, fixture
 
 
 Ao = NewType("Ao", str)
@@ -39,22 +39,21 @@ def fixture_b(b1: Bi1, b2: Bi2) -> Iterator[Bo]:
     print("Leaving b")
 
 
-# class Co(TypedDict):
-#     """Output type for fixture_c encapsulating the injected value from fixture_b."""
+class Co(TypedDict):
+    """Output type for fixture_c encapsulating the injected value from fixture_b."""
 
-#     c: Bo
+    c: Bo
 
 
-# @fixture
-# @compose(fixture_b(Bi1(13), Bi2(1.44)))
-# @fixture_b(Bi1(13), Bi2(1.44))
-# def fixture_c(b: Bo) -> Iterator[Co]:
-#     """A fixture that takes an injected value from ANOTHER fixture."""
-#     print("Entering c")
+@fixture
+@compose(fixture_b(Bi1(13), Bi2(1.44)))
+def fixture_c(b: Bo) -> Iterator[Co]:
+    """A fixture that takes an injected value from ANOTHER fixture."""
+    print("Entering c")
 
-#     yield Co(c=b)
+    yield Co(c=b)
 
-#     print("Leaving c")
+    print("Leaving c")
 
 
 # Di = NewType("Di", bool)

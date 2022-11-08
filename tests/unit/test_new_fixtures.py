@@ -2,8 +2,8 @@
 
 from .utils import fixture_a, Ao
 from .utils import fixture_b, Bi1, Bi2, Bo
+from .utils import fixture_c, Co
 
-# from .utils import fixture_c, Co
 # from .utils import fixture_d, Di, Do
 # from .utils import fixture_e, Eo
 # from .utils import fixture_f, Fi, Fo
@@ -39,10 +39,10 @@ def test_a_and_b(a: Ao, b: Bo) -> None:
     print("Leaving test a_and_b")
 
 
-# @fixture_c()  # pylint: disable=E1120
-# def test_c(c: Co) -> None:
-#     """Test fixture_c which receives values from fixture_b."""
-#     assert c == {"c": {"b1": 13, "b2": 1.44}}
+@fixture_c()  # pylint: disable=E1120
+def test_c(c: Co) -> None:
+    """Test fixture_c which receives values from fixture_b."""
+    assert c == {"c": {"b1": 13, "b2": 1.44}}
 
 
 # @fixture_d(Di(True))  # pylint: disable=E1120
