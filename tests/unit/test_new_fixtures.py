@@ -4,8 +4,8 @@ from .utils import fixture_a, Ao
 from .utils import fixture_b, Bi1, Bi2, Bo
 from .utils import fixture_c, Co
 from .utils import fixture_d, Di, Do
+from .utils import fixture_e, Eo
 
-# from .utils import fixture_e, Eo
 # from .utils import fixture_f, Fi, Fo
 
 
@@ -51,10 +51,10 @@ def test_d(d: Do) -> None:
     assert d == {"b": {"b1": 123, "b2": 1.23}, "d": True}
 
 
-# @fixture_e()
-# def test_e(e: Eo) -> None:
-#     """Test mutation of injected state by fixture_e."""
-#     assert e == 1
+@fixture_e()
+def test_e(e: Eo) -> None:
+    """Test mutation of injected state by fixture_e."""
+    assert e == 1
 
 
 # @fixture_f(Fi(42))  # pylint: disable=E1120
@@ -69,6 +69,6 @@ def test_d(d: Do) -> None:
 #     print("Leaving test f")
 
 
-# # # @fixture_b(TypeB("Value B"), inject=False)
-# # # def test_b_no_injection() -> None:
-# # #     """The value yielded by fixture_b is NOT injected into the test."""
+# # @fixture_b(TypeB("Value B"), inject=False)
+# # def test_b_no_injection() -> None:
+# #     """The value yielded by fixture_b is NOT injected into the test."""

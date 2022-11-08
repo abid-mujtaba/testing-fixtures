@@ -85,23 +85,23 @@ def fixture_d(b: Bo, d: Di) -> Iterator[Do]:
     print("Leaving d")
 
 
-# Eo = NewType("Eo", int)
-# VALUE_E = {"value": 0}
+Eo = NewType("Eo", int)
+VALUE_E = {"value": 0}
 
 
-# @fixture
-# def fixture_e() -> Iterator[Eo]:
-#     """A fixture that mutates the inject value before yielding it, then unmutates it."""
-#     print("Entering e")
-#     VALUE_E["value"] += 1
+@fixture
+def fixture_e() -> Iterator[Eo]:
+    """A fixture that mutates the inject value before yielding it, then unmutates it."""
+    print("Entering e")
+    VALUE_E["value"] += 1
 
-#     yield Eo(VALUE_E["value"])
+    yield Eo(VALUE_E["value"])
 
-#     VALUE_E["value"] -= 1
-#     print("Leaving e")
+    VALUE_E["value"] -= 1
+    print("Leaving e")
 
 
-# Fi = NewType("Fi", int)
+Fi = NewType("Fi", int)
 
 
 # class Fo(TypedDict):
@@ -112,7 +112,7 @@ def fixture_d(b: Bo, d: Di) -> Iterator[Do]:
 
 
 # @fixture
-# @fixture_e()
+# @compose(fixture_e())
 # def fixture_f(e: Eo, f: Fi) -> Iterator[Fo]:
 #     """A fixture that gets state from both test site and fixture_e (mutating)."""
 #     print("Entering f")
