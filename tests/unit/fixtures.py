@@ -64,7 +64,6 @@ class Fixture(Generic[Y]):
         self._kwargs = d_kwargs
 
         self._entries = 0  # Keep track of rentrance
-        # self._generator = self._func(*d_args, **d_kwargs)
 
     def __enter__(self) -> Y:
         self._entries += 1
@@ -229,8 +228,7 @@ def compose(
             """
 
             with fixture_ as yielded_value:
-                for value in fixture_definition(yielded_value, *d_args, **d_kwargs):
-                    yield value
+                yield from fixture_definition(yielded_value, *d_args, **d_kwargs)
 
         return _inner
 
