@@ -9,7 +9,7 @@ Ao = NewType("Ao", str)
 
 
 @fixture
-def fixture_a() -> FixtureDefinition[Ao]:
+def fixture_factory_a() -> FixtureDefinition[Ao]:
     """A simple fixture that yields a string."""
     print("Entering a")
 
@@ -30,7 +30,7 @@ class Bo(TypedDict):
 
 
 @fixture
-def fixture_b(b1: Bi1, b2: Bi2) -> FixtureDefinition[Bo]:
+def fixture_factory_b(b1: Bi1, b2: Bi2) -> FixtureDefinition[Bo]:
     """A fixture that takes injected value from the test function decoration."""
     print("Entering b")
 
@@ -46,8 +46,8 @@ class Co(TypedDict):
 
 
 @fixture
-@compose(fixture_b(Bi1(13), Bi2(1.44)))
-def fixture_c(b: Bo) -> FixtureDefinition[Co]:
+@compose(fixture_factory_b(Bi1(13), Bi2(1.44)))
+def fixture_factory_c(b: Bo) -> FixtureDefinition[Co]:
     """A fixture that takes an injected value from ANOTHER fixture."""
     print("Entering c")
 
@@ -71,8 +71,8 @@ class Do(TypedDict):
 
 
 @fixture
-@compose(fixture_b(Bi1(123), Bi2(1.23)))
-def fixture_d(b: Bo, d: Di) -> FixtureDefinition[Do]:
+@compose(fixture_factory_b(Bi1(123), Bi2(1.23)))
+def fixture_factory_d(b: Bo, d: Di) -> FixtureDefinition[Do]:
     """
     A fixture that takes injected value from two places.
 
@@ -90,7 +90,7 @@ VALUE_E = {"value": 0}
 
 
 @fixture
-def fixture_e() -> FixtureDefinition[Eo]:
+def fixture_factory_e() -> FixtureDefinition[Eo]:
     """A fixture that mutates the inject value before yielding it, then unmutates it."""
     print("Entering e")
     VALUE_E["value"] += 1
@@ -111,12 +111,12 @@ class Fo(TypedDict):
     f: Fi
 
 
-FIX_E = fixture_e()
+FIXTURE_E = fixture_factory_e()
 
 
 @fixture
-@compose(FIX_E)
-def fixture_f(e: Eo, f: Fi) -> FixtureDefinition[Fo]:
+@compose(FIXTURE_E)
+def fixture_factory_f(e: Eo, f: Fi) -> FixtureDefinition[Fo]:
     """A fixture that gets state from both test site and fixture_e (mutating)."""
     print("Entering f")
     try:

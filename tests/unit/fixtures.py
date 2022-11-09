@@ -31,8 +31,9 @@ class Fixture(Generic[Y]):
     As a decorator they can be applied to test functions to act as a fixture which
     runs the setup, injects its yielded value into the test, and then runs the
     teardown.
-    Instances are created from a single generator passed in. No other arguments.
-    The instantiating generator MUST be single-shot (single yield) otherwise a
+    Instances are created from a generator function passed in, along with the args and
+    kwargs it takes to create a generator.
+    The fixture definition generator MUST be single-shot (single yield) otherwise a
     RuntimeError will be raised.
 
     The __enter__ and __exit__ have been copied from contextlib._GeneratorContextManager
