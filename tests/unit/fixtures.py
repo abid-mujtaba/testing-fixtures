@@ -24,7 +24,7 @@ Y = TypeVar("Y")  # Type of value yielded by fixture generator to be injected in
 FixtureDefinition = Generator[Y, None, None]
 
 
-class Fixture(Generic[Y]):
+class Fixture(Generic[Y, D]):
     """
     Instances of this class function both as a context manager and a decorator.
 
@@ -50,7 +50,7 @@ class Fixture(Generic[Y]):
         self,
         generator_func: Callable[D, FixtureDefinition[Y]],
         *d_args: D.args,
-        **d_kwargs: D.kwargs
+        **d_kwargs: D.kwargs,
     ):
         """
         Create a Fixture object.
@@ -165,7 +165,7 @@ class Fixture(Generic[Y]):
 
 def fixture(
     generator_func: Callable[D, FixtureDefinition[Y]],
-) -> Callable[D, Fixture[Y]]:
+) -> Callable[D, Fixture[Y, D]]:
     """
     Convert a one-shot generator func, which is the fixture defn, into a test fixture.
 
@@ -181,7 +181,7 @@ def fixture(
     @wraps(generator_func)
     def _parametrized_test_decorator(
         *d_args: D.args, **d_kwargs: D.kwargs
-    ) -> Fixture[Y]:
+    ) -> Fixture[Y, D]:
         """
         Parameterized decorator that returns a Fixture object.
 
@@ -195,14 +195,15 @@ def fixture(
     return _parametrized_test_decorator
 
 
+Q = ParamSpec("Q")
 Z = TypeVar("Z")
 
 
 def compose(
-    fixture_: Fixture[Y],
+    fixture_: Fixture[Y, D],
 ) -> Callable[
-    [Callable[Concatenate[Y, D], FixtureDefinition[Z]]],
-    Callable[D, FixtureDefinition[Z]],
+    [Callable[Concatenate[Y, Q], FixtureDefinition[Z]]],
+    Callable[Q, FixtureDefinition[Z]],
 ]:
     """
     Take a fixture and return a decorator for fixture definitions.
@@ -212,14 +213,14 @@ def compose(
     """
 
     def _decorator(
-        fixture_definition: Callable[Concatenate[Y, D], FixtureDefinition[Z]]
-    ) -> Callable[D, FixtureDefinition[Z]]:
+        fixture_definition: Callable[Concatenate[Y, Q], FixtureDefinition[Z]]
+    ) -> Callable[Q, FixtureDefinition[Z]]:
         """Decorator for fixture defns that injects value from composed fixture."""
 
         # with fixture as yielded_value:
         #     return partial(fixture_definition, yielded_value)
 
-        def _inner(*d_args: D.args, **d_kwargs: D.kwargs) -> FixtureDefinition[Z]:
+        def _inner(*d_args: Q.args, **d_kwargs: Q.kwargs) -> FixtureDefinition[Z]:
             """
             Replacement for fixture defintion.
 
