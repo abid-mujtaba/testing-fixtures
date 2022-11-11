@@ -8,6 +8,8 @@ from .utils import fixture_factory_d, Di, Do
 from .utils import fixture_factory_e, Eo
 from .utils import FIXTURE_E, fixture_factory_f, Fi, Fo
 
+# from .utils import FIXTURE_B, fixture_factory_g, Gi, Go
+
 
 @fixture_factory_a()
 def test_a(a: Ao) -> None:
@@ -67,6 +69,14 @@ def test_fixture_f(e: Eo, f: Fo) -> None:
     assert f == {"e": 1, "f": 42}
 
     print("Leaving test f")
+
+
+# @fixture_factory_g(Gi(41))
+# @FIXTURE_B.arguments(b1=Bi1(56), b2=Bi2(9.7))  # pylint: disable=E1101
+# def test_fixture_g(b: Bo, g: Go) -> None:
+#     """Inject args into fixture from test site and trickle down to pulled in fixture."""
+#     assert b == {"b1": 56, "b2": 9.7}
+#     assert g == {"b": b, "g": 41}
 
 
 # # @fixture_b(TypeB("Value B"), inject=False)

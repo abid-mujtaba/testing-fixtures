@@ -123,3 +123,22 @@ def fixture_factory_f(e: Eo, f: Fi) -> FixtureDefinition[Fo]:
         yield Fo(e=e, f=f)
     finally:
         print("Leaving f")
+
+
+# FIXTURE_B = fixture_factory_b()
+
+# Gi = NewType("Gi", int)
+
+
+# class Go(TypedDict):
+#     """Output type for fixture_g encapsulating injection from fixture_b and test site."""
+
+#     b: Bo
+#     g: Gi
+
+
+# @fixture
+# # @compose(FIXTURE_B)
+# def fixture_factory_g(b: Bo, g: Gi) -> FixtureDefinition[Go]:
+#     """Fixture that uses a late-injected fixture_b and a value from the test sit."""
+#     yield {"b": b, "g": g}
