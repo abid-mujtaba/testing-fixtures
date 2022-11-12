@@ -4,6 +4,7 @@ from functools import partial, wraps
 
 from types import TracebackType
 from typing import (
+    Any,
     Callable,
     Concatenate,
     Generator,
@@ -31,50 +32,66 @@ class Fixture(Generic[Y, D]):
     As a decorator they can be applied to test functions to act as a fixture which
     runs the setup, injects its yielded value into the test, and then runs the
     teardown.
-    Instances are created from a generator function passed in, along with the args and
-    kwargs it takes to create a generator.
+    Instances are created from a generator function passed in which is the fixture
+    definition generator.
     The fixture definition generator MUST be single-shot (single yield) otherwise a
     RuntimeError will be raised.
 
     The __enter__ and __exit__ have been copied from contextlib._GeneratorContextManager
-    (the underlying class of contextlib.contextmanager) and then altered to both
-    match the definition of __init__ AND
-    to make the context manager BOTH reentrant and reusable.
+    (the underlying class of contextlib.contextmanager) and then altered to make the
+    context manager BOTH reentrant and reusable.
 
     The Fixture behaves similarly to contextlib.contextmanager with the
     important difference that the decorator does an injection of the yielded value
     rather than ignoring it completely.
+
+    The fixture definition generator can expect args and kwargs.
+    These are specified AFTER the Fixture object has been instantiated by calling the
+    .set() method.
+
+    Since a Fixture instance can be used by multiple tests AND composed with multiple
+    other fixture definitions the definition args and kwargs are cached at
+    various levels by mostly being closed over.
     """
 
-    def __init__(
-        self,
-        generator_func: Callable[D, FixtureDefinition[Y]],
-        *d_args: D.args,
-        **d_kwargs: D.kwargs,
-    ):
+    def __init__(self, generator_func: Callable[D, FixtureDefinition[Y]]):
         """
         Create a Fixture object.
 
         Pass in the generator_func which is the fixture definition, a function with a
         SINGLE yield.
-        Additionally pass in args and kwargs accepted by the generator_func.
         """
         self._func = generator_func
-        self._args = d_args
-        self._kwargs = d_kwargs
+        self._generator: FixtureDefinition[Y]  # Declare here for pylint. Assigned later
+        self._value: Y
+
+        # Default values for fixture definition args and kwargs
+        self.args: tuple[Any, ...] = tuple()
+        self.kwargs: dict[str, Any] = {}
 
         self._entries = 0  # Keep track of rentrance
+
+    def set(self, *d_args: D.args, **d_kwargs: D.kwargs) -> "Fixture[Y, D]":
+        """Method for setting the args and kwargs passed down to the fixture defn."""
+        self.args = d_args
+        self.kwargs = d_kwargs
+
+        return self
+
+    def reset(self) -> None:
+        """Reset the fixture definition args and kwargs."""
+        print(f"Resetting  {self._func.__name__}")
+        self.args = tuple()
+        self.kwargs = {}
 
     def __enter__(self) -> Y:
         self._entries += 1
 
         if self._entries == 1:  # First entry
-            self._generator = self._func(  # pylint: disable=W0201
-                *self._args, **self._kwargs
-            )
+            self._generator = self._func(*self.args, **self.kwargs)
 
             try:
-                self._value = next(self._generator)  # pylint: disable=W0201
+                self._value = next(self._generator)
                 return self._value
 
             except StopIteration:
@@ -90,9 +107,15 @@ class Fixture(Generic[Y, D]):
 
         if typ is None:
             if self._entries == 0:  # Last exit (in rentrance) so finish up generator
+
                 try:
                     next(self._generator)
                 except StopIteration:
+
+                    # Now that we are at the last exit we reset the args and kwargs
+                    # to avoid collisions with later usage
+                    self.reset()
+
                     return False
                 else:
                     raise RuntimeError("generator didn't stop")
@@ -150,9 +173,16 @@ class Fixture(Generic[Y, D]):
         # after it has been decorated
         reduced_func = partial(test_function, None)
 
+        # Store the fixture definition args and kwargs in the closure
+        fixture_args = self.args
+        fixture_kwargs = self.kwargs
+
         @wraps(reduced_func)
         def _inner(*t_args: T.args, **t_kwargs: T.kwargs) -> None:
             """Decorated test function which has the fixture yielded value injected."""
+            # Use the closed over values to set the fixture definition args and kwargs
+            self.set(*fixture_args, **fixture_kwargs)
+
             # Since the class defines __enter__ and __exit__, we can use `self` as a
             # context manager
             # fg_value: The value yielded by the fixture definition (generator function,
@@ -163,36 +193,10 @@ class Fixture(Generic[Y, D]):
         return _inner
 
 
-def fixture(
-    generator_func: Callable[D, FixtureDefinition[Y]],
-) -> Callable[D, Fixture[Y, D]]:
-    """
-    Convert a one-shot generator func, which is the fixture defn, into a test fixture.
-
-    Return a parameterized decorator that is applied to test functions.
-    The decorator returned AFTER the parameters are applied will inject the value
-    yielded by the fixture definition generator into the test function.
-    It will essentially behave as a context manager wrapping the test function.
-
-    The decorator will be able to take values which will be passed in as arguments
-    to the fixture definition (one-shot generator).
-    """
-
-    @wraps(generator_func)
-    def _parametrized_test_decorator(
-        *d_args: D.args, **d_kwargs: D.kwargs
-    ) -> Fixture[Y, D]:
-        """
-        Parameterized decorator that returns a Fixture object.
-
-        The Fixture object takes the fixture definition (generator func) and the
-        parameters to be passed to it.
-        It is capable of behaving both as a decorator (of test functions) and
-        a context manager (for fixture composition)
-        """
-        return Fixture(generator_func, *d_args, **d_kwargs)
-
-    return _parametrized_test_decorator
+# We declare 'fixture' to be an alias for the Fixture class
+# When applied as a decorator to a fixture definition it creates the corresponding
+# instance of the Fixture class
+fixture = Fixture
 
 
 Q = ParamSpec("Q")
@@ -200,7 +204,7 @@ Z = TypeVar("Z")
 
 
 def compose(
-    fixture_: Fixture[Y, D],
+    fixture_: Fixture[Y, D]
 ) -> Callable[
     [Callable[Concatenate[Y, Q], FixtureDefinition[Z]]],
     Callable[Q, FixtureDefinition[Z]],
@@ -212,21 +216,30 @@ def compose(
     definition (generator function).
     """
 
+    # Store the fixture (being composed) definition args and kwargs here allowing
+    # it to be closed over
+    fixture_args = fixture_.args
+    fixture_kwargs = fixture_.kwargs
+
     def _decorator(
         fixture_definition: Callable[Concatenate[Y, Q], FixtureDefinition[Z]]
     ) -> Callable[Q, FixtureDefinition[Z]]:
         """Decorator for fixture defns that injects value from composed fixture."""
 
-        # with fixture as yielded_value:
-        #     return partial(fixture_definition, yielded_value)
-
+        @wraps(fixture_definition)
         def _inner(*d_args: Q.args, **d_kwargs: Q.kwargs) -> FixtureDefinition[Z]:
             """
             Replacement for fixture defintion.
 
             The first value is injected from the composed fixture resulting in a
-            simpler definition (generator function).
+            simpler fixture definition (generator function).
             """
+
+            # Set definition args and kwargs for the fixture being compsed using
+            # the values closed over earlier.
+            # This allows for the definition args and kwargs to be injected from the
+            # test site if desired.
+            fixture_.set(*fixture_args, **fixture_kwargs)
 
             with fixture_ as yielded_value:
                 yield from fixture_definition(yielded_value, *d_args, **d_kwargs)

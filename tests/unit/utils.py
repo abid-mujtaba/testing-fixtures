@@ -9,13 +9,16 @@ Ao = NewType("Ao", str)
 
 
 @fixture
-def fixture_factory_a() -> FixtureDefinition[Ao]:
+def fixture_a() -> FixtureDefinition[Ao]:
     """A simple fixture that yields a string."""
     print("Entering a")
 
     yield Ao("a")
 
     print("Leaving a")
+
+
+fixture_a.set()
 
 
 Bi1 = NewType("Bi1", int)
@@ -30,7 +33,7 @@ class Bo(TypedDict):
 
 
 @fixture
-def fixture_factory_b(b1: Bi1, b2: Bi2) -> FixtureDefinition[Bo]:
+def fixture_b(b1: Bi1, b2: Bi2) -> FixtureDefinition[Bo]:
     """A fixture that takes injected value from the test function decoration."""
     print("Entering b")
 
@@ -46,8 +49,8 @@ class Co(TypedDict):
 
 
 @fixture
-@compose(fixture_factory_b(Bi1(13), Bi2(1.44)))
-def fixture_factory_c(b: Bo) -> FixtureDefinition[Co]:
+@compose(fixture_b.set(Bi1(13), Bi2(1.44)))
+def fixture_c(b: Bo) -> FixtureDefinition[Co]:
     """A fixture that takes an injected value from ANOTHER fixture."""
     print("Entering c")
 
@@ -71,8 +74,8 @@ class Do(TypedDict):
 
 
 @fixture
-@compose(fixture_factory_b(Bi1(123), Bi2(1.23)))
-def fixture_factory_d(b: Bo, d: Di) -> FixtureDefinition[Do]:
+@compose(fixture_b.set(Bi1(123), Bi2(1.23)))
+def fixture_d(b: Bo, d: Di) -> FixtureDefinition[Do]:
     """
     A fixture that takes injected value from two places.
 
@@ -90,7 +93,7 @@ VALUE_E = {"value": 0}
 
 
 @fixture
-def fixture_factory_e() -> FixtureDefinition[Eo]:
+def fixture_e() -> FixtureDefinition[Eo]:
     """A fixture that mutates the inject value before yielding it, then unmutates it."""
     print("Entering e")
     VALUE_E["value"] += 1
@@ -111,12 +114,9 @@ class Fo(TypedDict):
     f: Fi
 
 
-FIXTURE_E = fixture_factory_e()
-
-
 @fixture
-@compose(FIXTURE_E)
-def fixture_factory_f(e: Eo, f: Fi) -> FixtureDefinition[Fo]:
+@compose(fixture_e)
+def fixture_f(e: Eo, f: Fi) -> FixtureDefinition[Fo]:
     """A fixture that gets state from both test site and fixture_e (mutating)."""
     print("Entering f")
     try:
@@ -125,20 +125,22 @@ def fixture_factory_f(e: Eo, f: Fi) -> FixtureDefinition[Fo]:
         print("Leaving f")
 
 
-# FIXTURE_B = fixture_factory_b()
-
-# Gi = NewType("Gi", int)
+Gi = NewType("Gi", int)
 
 
-# class Go(TypedDict):
-#     """Output type for fixture_g encapsulating injection from fixture_b and test site."""
+class Go(TypedDict):
+    """Output type for fixture_g encapsulating injection from fixture_b and test site."""
 
-#     b: Bo
-#     g: Gi
+    b: Bo
+    g: Gi
 
 
-# @fixture
-# # @compose(FIXTURE_B)
-# def fixture_factory_g(b: Bo, g: Gi) -> FixtureDefinition[Go]:
-#     """Fixture that uses a late-injected fixture_b and a value from the test sit."""
-#     yield {"b": b, "g": g}
+@fixture
+@compose(fixture_b)
+def fixture_g(b: Bo, g: Gi) -> FixtureDefinition[Go]:
+    """Fixture that uses a late-injected fixture_b and a value from the test sit."""
+    print("Entering g")
+
+    yield {"b": b, "g": g}
+
+    print("Leaving g")
