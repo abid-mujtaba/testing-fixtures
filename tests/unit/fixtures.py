@@ -87,7 +87,18 @@ class Fixture(Generic[Y, D]):
         self._entries += 1
 
         if self._entries == 1:  # First entry
-            self._generator = self._func(*self.args, **self.kwargs)
+            try:
+                self._generator = self._func(*self.args, **self.kwargs)
+            except TypeError:
+                # This indicates that the order of re-entry is invalid causing incorrect
+                # (kw)args to be passed in (usually the default/reset empty values)
+                # Reset the (kw)args to be sure
+                # Reset the entry count so that the next usage of the fixture (in a
+                # test) works properly
+                self.reset()
+                self._entries = 0
+
+                raise
 
             try:
                 self._value = next(self._generator)
