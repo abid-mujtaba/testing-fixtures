@@ -2,7 +2,7 @@
 
 from typing import NewType, TypedDict
 
-from .fixtures import compose, fixture, FixtureDefinition
+from .fixtures import compose, compose_noinject, fixture, FixtureDefinition
 
 
 Ao = NewType("Ao", str)
@@ -144,3 +144,23 @@ def fixture_g(b: Bo, g: Gi) -> FixtureDefinition[Go]:
     yield {"b": b, "g": g}
 
     print("Leaving g")
+
+
+Hi = NewType("Hi", int)
+
+
+class Ho(TypedDict):
+    """Output type for fixture_h wrapping its input type."""
+
+    h: Hi
+
+
+@fixture
+@compose_noinject(fixture_b.set(Bi1(39), Bi2(8.1)))
+def fixture_h(h: Hi) -> FixtureDefinition[Ho]:
+    """Fixture that uses a composed fixture_b but NOT its yielded value."""
+    print("Entering h")
+
+    yield Ho(h=h)
+
+    print("Leaving h")

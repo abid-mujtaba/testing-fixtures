@@ -269,6 +269,51 @@ def compose(
     return _decorator
 
 
+def compose_noinject(
+    fixture_: Fixture[Y, D]
+) -> Callable[[Callable[Q, FixtureDefinition[Z]]], Callable[Q, FixtureDefinition[Z]],]:
+    """
+    Take a fixture and return a decorator for fixture definitions.
+
+    Does NOT inject value yielded from fixture into wrapped definition.
+    """
+
+    # Store the fixture (being composed) definition args and kwargs here allowing
+    # it to be closed over
+    fixture_args = fixture_.args
+    fixture_kwargs = fixture_.kwargs
+
+    # Now that the (kw)args have been closed over we can delete from the object
+    fixture_.reset()
+
+    def _decorator(
+        fixture_definition: Callable[Q, FixtureDefinition[Z]]
+    ) -> Callable[Q, FixtureDefinition[Z]]:
+        """Decorator for fixture defns that does NOT inject yielded value."""
+
+        @wraps(fixture_definition)
+        def _inner(*d_args: Q.args, **d_kwargs: Q.kwargs) -> FixtureDefinition[Z]:
+            """
+            Replacement for fixture defintion.
+
+            The first value is injected from the composed fixture resulting in a
+            simpler fixture definition (generator function).
+            """
+
+            # Set definition args and kwargs for the fixture being composed using
+            # the values closed over earlier.
+            # This allows for the definition args and kwargs to be injected from the
+            # test site if desired.
+            fixture_.set(*fixture_args, **fixture_kwargs)
+
+            with fixture_:  # Ignore yielded value
+                yield from fixture_definition(*d_args, **d_kwargs)
+
+        return _inner
+
+    return _decorator
+
+
 def noinject(
     fixture_: Fixture[Y, D]
 ) -> Callable[[Callable[T, None]], Callable[T, None]]:

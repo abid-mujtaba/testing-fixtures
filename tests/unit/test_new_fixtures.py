@@ -11,6 +11,7 @@ from .utils import fixture_d, Di, Do
 from .utils import fixture_e, Eo
 from .utils import fixture_f, Fi, Fo
 from .utils import fixture_g, Gi, Go
+from .utils import fixture_h, Hi, Ho
 
 
 @fixture_a
@@ -123,3 +124,17 @@ def test_invalid_g(b: Bo, g: Go) -> None:
 @noinject(fixture_b.set(Bi1(75), Bi2(2.71)))
 def test_b_no_injection() -> None:
     """The value yielded by fixture_b is NOT injected into the test."""
+
+
+@fixture_h.set(Hi(49))
+def test_fixture_h(h: Ho) -> None:
+    """Test fixture_h which uses a noinject composed fixture_b."""
+    assert h == {"h": 49}
+
+
+@fixture_b.set(Bi1(23), Bi2(4.7))
+@fixture_h.set(Hi(26))
+def test_fixture_b_and_h(h: Ho, b: Bo) -> None:
+    """Test fixtures b and h where the latter uses b but ignored yielded value."""
+    assert h == {"h": 26}
+    assert b == {"b1": 23, "b2": 4.7}
