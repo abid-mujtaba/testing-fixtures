@@ -2,7 +2,7 @@
 
 import pytest
 
-from .fixtures import noinject
+from fixtures import noinject
 
 from .utils import fixture_a, Ao
 from .utils import fixture_b, Bi1, Bi2, Bo
