@@ -1,0 +1,15 @@
+{
+    "configurations": [
+        {
+            "name": "Python: Debug tests (pytest)",
+            "type": "python",
+            "request": "launch",
+            "module": "pytest",
+            "args": [
+                "-sqx",
+                "tests/unit"
+            ],
+            "justMyCode": true
+        }
+    ]
+}
