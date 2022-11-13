@@ -267,3 +267,26 @@ def compose(
         return _inner
 
     return _decorator
+
+
+def noinject(
+    fixture_: Fixture[Y, D]
+) -> Callable[[Callable[T, None]], Callable[T, None]]:
+    """Transform a Fixture to make it non-injecting (absorb yielded value)."""
+
+    def _decorator(test_function: Callable[T, None]) -> Callable[T, None]:
+        """Non-injecting decorator for test functions."""
+
+        fixture_args = fixture_.args
+        fixture_kwargs = fixture_.kwargs
+
+        def _inner(*args: T.args, **kwargs: T.kwargs) -> None:
+            """Replacement for test function but with no value yielded."""
+            fixture_.set(*fixture_args, **fixture_kwargs)
+
+            with fixture_:  # Yielded value is being ignored
+                return test_function(*args, **kwargs)
+
+        return _inner
+
+    return _decorator

@@ -2,6 +2,8 @@
 
 import pytest
 
+from .fixtures import noinject
+
 from .utils import fixture_a, Ao
 from .utils import fixture_b, Bi1, Bi2, Bo
 from .utils import fixture_c, Co
@@ -118,6 +120,6 @@ def test_invalid_g(b: Bo, g: Go) -> None:
     assert g == {"b": b, "g": 41}
 
 
-# # @fixture_b(TypeB("Value B"), inject=False)
-# # def test_b_no_injection() -> None:
-# #     """The value yielded by fixture_b is NOT injected into the test."""
+@noinject(fixture_b.set(Bi1(75), Bi2(2.71)))
+def test_b_no_injection() -> None:
+    """The value yielded by fixture_b is NOT injected into the test."""
