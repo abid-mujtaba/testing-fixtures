@@ -110,6 +110,8 @@ class Fixture(Generic[Y, D]):
                 try:
                     next(self._generator)
                 except StopIteration:
+                    # Now that we are done with the fixture context manager we reset it
+                    self.reset()
                     return False
                 else:
                     raise RuntimeError("generator didn't stop")
@@ -242,7 +244,7 @@ def compose(
             simpler fixture definition (generator function).
             """
 
-            # Set definition args and kwargs for the fixture being compsed using
+            # Set definition args and kwargs for the fixture being composed using
             # the values closed over earlier.
             # This allows for the definition args and kwargs to be injected from the
             # test site if desired.

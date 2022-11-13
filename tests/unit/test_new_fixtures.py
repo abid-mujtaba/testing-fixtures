@@ -45,6 +45,20 @@ def test_c(c: Co) -> None:
     assert c == {"c": {"b1": 13, "b2": 1.44}}
 
 
+# NOTE: The rule is that the state set at the first entry into the context manager(s)
+#       wrapping the test takes precedence.
+#       Since the state of fixture_b is being set at composition time we will require
+#       fixture_c to be the outermost decorator here to ensure that, that is the state
+#       that takes precedence from the start.
+#       Reversing the order will result in an error.
+@fixture_c
+@fixture_b
+def test_b_and_c(b: Bo, c: Co) -> None:
+    """Use fixture_b both in test and composed via c with its state set at composition."""
+    assert b == {"b1": 13, "b2": 1.44}
+    assert c == {"c": {"b1": 13, "b2": 1.44}}
+
+
 @fixture_d.set(Di(True))
 def test_d(d: Do) -> None:
     """Test fixture_d which receives values from both fixture_b and the test site."""
@@ -72,6 +86,9 @@ def test_f(e: Eo, f: Fo) -> None:
 # NOTE: Since fixture_g requires injection from fixture_b AND we are setting the
 #       state for fixture_b at the test site the fixture_b decorator here MUST
 #       wrap the fixture_b decorator here.
+#       This ensures that the state for fixture_b set here (at the test site) is the
+#       outer-most state when the coontext managers around the test are created and so
+#       takes precedence.
 #       Reversing the order will result in an error.
 @fixture_b.set(Bi1(56), Bi2(9.7))
 @fixture_g.set(Gi(41))

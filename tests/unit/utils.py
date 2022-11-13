@@ -138,7 +138,7 @@ class Go(TypedDict):
 @fixture
 @compose(fixture_b)
 def fixture_g(b: Bo, g: Gi) -> FixtureDefinition[Go]:
-    """Fixture that uses a late-injected fixture_b and a value from the test sit."""
+    """Fixture that uses a late-injected fixture_b and a value from the test site."""
     print("Entering g")
 
     yield {"b": b, "g": g}
