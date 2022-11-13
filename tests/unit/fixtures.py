@@ -80,7 +80,6 @@ class Fixture(Generic[Y, D]):
 
     def reset(self) -> None:
         """Reset the fixture definition args and kwargs."""
-        print(f"Resetting  {self._func.__name__}")
         self.args = tuple()
         self.kwargs = {}
 
@@ -111,11 +110,6 @@ class Fixture(Generic[Y, D]):
                 try:
                     next(self._generator)
                 except StopIteration:
-
-                    # Now that we are at the last exit we reset the args and kwargs
-                    # to avoid collisions with later usage
-                    self.reset()
-
                     return False
                 else:
                     raise RuntimeError("generator didn't stop")
@@ -177,6 +171,9 @@ class Fixture(Generic[Y, D]):
         fixture_args = self.args
         fixture_kwargs = self.kwargs
 
+        # Now that the values have been closed over we can delete from the object
+        self.reset()
+
         @wraps(reduced_func)
         def _inner(*t_args: T.args, **t_kwargs: T.kwargs) -> None:
             """Decorated test function which has the fixture yielded value injected."""
@@ -191,6 +188,13 @@ class Fixture(Generic[Y, D]):
                 return test_function(fg_value, *t_args, **t_kwargs)
 
         return _inner
+
+    def __del__(self) -> None:
+        """Validate usage on garbage collection."""
+        if self._entries != 0:
+            raise RuntimeError(
+                f"Fixture {self._func.__name__} destroyed while all rentries were not exited"
+            )
 
 
 # We declare 'fixture' to be an alias for the Fixture class
@@ -220,6 +224,9 @@ def compose(
     # it to be closed over
     fixture_args = fixture_.args
     fixture_kwargs = fixture_.kwargs
+
+    # Now that the (kw)args have been closed over we can delete from the object
+    fixture_.reset()
 
     def _decorator(
         fixture_definition: Callable[Concatenate[Y, Q], FixtureDefinition[Z]]
