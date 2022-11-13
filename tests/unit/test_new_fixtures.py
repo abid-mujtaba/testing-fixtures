@@ -1,5 +1,7 @@
 """Test the new fixtures."""
 
+import pytest
+
 from .utils import fixture_a, Ao
 from .utils import fixture_b, Bi1, Bi2, Bo
 from .utils import fixture_c, Co
@@ -59,6 +61,15 @@ def test_b_and_c(b: Bo, c: Co) -> None:
     assert c == {"c": {"b1": 13, "b2": 1.44}}
 
 
+@pytest.mark.xfail(reason="Invalid fixture application order")
+@fixture_b
+@fixture_c
+def test_invalid_b_and_c(c: Co, b: Bo) -> None:
+    """Use fixture_b both in test and composed via c with its state set at composition."""
+    assert b == {"b1": 13, "b2": 1.44}
+    assert c == {"c": {"b1": 13, "b2": 1.44}}
+
+
 @fixture_d.set(Di(True))
 def test_d(d: Do) -> None:
     """Test fixture_d which receives values from both fixture_b and the test site."""
@@ -93,6 +104,15 @@ def test_f(e: Eo, f: Fo) -> None:
 @fixture_b.set(Bi1(56), Bi2(9.7))
 @fixture_g.set(Gi(41))
 def test_g(g: Go, b: Bo) -> None:
+    """Inject args into fixture from test site and trickle down to pulled in fixture."""
+    assert b == {"b1": 56, "b2": 9.7}
+    assert g == {"b": b, "g": 41}
+
+
+@pytest.mark.xfail(reason="Invalid fixture application order")
+@fixture_g.set(Gi(41))
+@fixture_b.set(Bi1(56), Bi2(9.7))
+def test_invalid_g(b: Bo, g: Go) -> None:
     """Inject args into fixture from test site and trickle down to pulled in fixture."""
     assert b == {"b1": 56, "b2": 9.7}
     assert g == {"b": b, "g": 41}
