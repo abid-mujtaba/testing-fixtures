@@ -3,8 +3,10 @@
 import json
 import requests
 
+from .utils import base_url
 
-def test_test_endpoint(base_url: str) -> None:
+
+def test_test_endpoint() -> None:
     """Test the /test end-point in the server."""
     # GIVEN
     url = f"{base_url}/test"

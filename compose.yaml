@@ -33,6 +33,7 @@ services:
       target: test
     init: true
     volumes:
+      - ./fixtures.py:/work/fixtures.py
       - ./tests:/work/tests
     depends_on:
       server:
@@ -44,4 +45,4 @@ services:
       - -m
       - pytest
       - -sqx
-      - tests
+      - tests/integration

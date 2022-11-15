@@ -3,11 +3,11 @@
 import json
 import requests
 
-from . import operation, Uuid
+from .utils import base_url, operation, Uuid
 
 
-@operation("identity")
-def test_compute_identity(uuid: Uuid, base_url: str) -> None:
+@operation.set("identity")
+def test_compute_identity(uuid: Uuid) -> None:
     """Test the /compute end-point for a user with identity operation."""
     # GIVEN
     payload = {"uuid": uuid, "input": 9}
@@ -22,8 +22,8 @@ def test_compute_identity(uuid: Uuid, base_url: str) -> None:
     assert output["result"] == 9  # Identity operation
 
 
-@operation("square")
-def test_compute_square(uuid: Uuid, base_url: str) -> None:
+@operation.set("square")
+def test_compute_square(uuid: Uuid) -> None:
     """Test the /compute end-point for a user with square operation."""
     # GIVEN
     payload = {"uuid": uuid, "input": 9}
@@ -38,8 +38,8 @@ def test_compute_square(uuid: Uuid, base_url: str) -> None:
     assert output["result"] == 81  # square operation
 
 
-@operation("cube")
-def test_compute_cube(uuid: Uuid, base_url: str) -> None:
+@operation.set("cube")
+def test_compute_cube(uuid: Uuid) -> None:
     """Test the /compute end-point for a user with cube operation."""
     # GIVEN
     payload = {"uuid": uuid, "input": 9}
@@ -55,7 +55,7 @@ def test_compute_cube(uuid: Uuid, base_url: str) -> None:
 
 
 # Note: No operation record in the DB
-def test_compute_no_operation(base_url: str) -> None:
+def test_compute_no_operation() -> None:
     """Test the /compute end-point for a user with no operation in the DB."""
     # GIVEN
     uuid = 7890
