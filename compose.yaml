@@ -45,4 +45,4 @@ services:
       - -m
       - pytest
       - -sqx
-      - tests/integration
+      - tests
