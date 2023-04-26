@@ -5,6 +5,10 @@ This repo contains an implementation of a new approach to fixtures for use with
 In addition we demonstrate how to use thes new fixturs in both unit and
 integration tests.
 
+## Project Evolution
+
+The evolution of this project is being tracked in this [doc](./evolution.md).
+
 ## Advantages of `pytest` fixtures
 
 `pytest` fixtures are extremely powerful and flexible.
