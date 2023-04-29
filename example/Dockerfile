@@ -19,3 +19,5 @@ FROM server AS test
 
 RUN --mount=type=cache,target=/root/.cache \
         python3.11 -m pip install -e .[dev]
+
+COPY fixtures.py /work/
