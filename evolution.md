@@ -17,3 +17,7 @@ He suggested that a 2-pronged approach be taken:
 
 1. Publish a library based on this repo
 2. Investigate the pytest codebase to determine how hard it would be add functionality to disable native pytest fixtures
+
+## Jul 2023
+
+- Based on the feedback from PyCon @abid-mujtaba published `testing-fixtures` to PyPI.
