@@ -1,0 +1,42 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "testing.fixtures"
+version = "0.0.1"
+authors = [
+    { name = "Abid H. Mujtaba", email = "abid.naqvi83@gmail.com" }
+]
+description = "New approach to Python test fixtures (compatible with pytest)"
+requires-python = ">=3.8"
+dependencies = []
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "Operating System :: OS Independent"
+]
+
+[project.optional-dependencies]
+dev = [
+    "black",
+    "mypy",
+    "pylint",
+    "pytest",
+]
+
+[tool.hatch.build]
+exclude = [
+    "*.md",
+    ".vscode/",
+    "example",
+    "tests/"
+]
+only-packages = true
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/testing"]
+
+[tool.pylint.'MESSAGE CONTROL']
+disable = [
+    "invalid-name"
+]
