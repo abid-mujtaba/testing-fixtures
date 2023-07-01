@@ -2,7 +2,7 @@
 
 This repo contains an implementation of a new approach to fixtures for use with
 `pytest`.
-In addition we demonstrate how to use thes new fixturs in both unit and
+In addition we demonstrate how to use these new fixtures in both unit and
 integration tests.
 
 ## Project Evolution
@@ -225,7 +225,7 @@ The following four decorators are provided for defining these fixtures:
 
 ## Implementation
 
-The implementation can be found in [fixtures.py](./fixtures.py).
+The implementation can be found in [testing.fixtures](./testing/fixtures).
 It consists of nested decorators, modified context managers, and parameter injection,
 all fully typed.
 
@@ -254,7 +254,7 @@ composition, and state injection at both the test and fixture definition site.
 To make changes to this code base the recommendation is to use a virtual env:
 
 ```console
-python3.10 -m venv .venv
+python3.11 -m venv .venv
 source .venv/bin/activate
 pip install ".[dev]"
 ```

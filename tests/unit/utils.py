@@ -2,7 +2,7 @@
 
 from typing import NewType, TypedDict
 
-from fixtures import compose, compose_noinject, fixture, FixtureDefinition
+from testing.fixtures import compose, compose_noinject, fixture, FixtureDefinition
 
 
 Ao = NewType("Ao", str)
