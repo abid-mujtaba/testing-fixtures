@@ -261,3 +261,11 @@ pip install ".[dev]"
 
 Your IDE should be able to now access this virtual env and
 provide you with autocomplete, intellisense, etc.
+
+## How to Deploy
+
+1. Build the package: `python3.11 -m build`
+   This will create the source tarball and wheel in the `dist/` folder.
+
+2. Deploy to pypi: `python3.11 -m twine upload dist/*`
+   Enter your pypi username and password.
