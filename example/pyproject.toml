@@ -9,7 +9,7 @@ authors = [
     { name = "Abid H. Mujtaba", email = "abid.naqvi83@gmail.com" }
 ]
 description = "Simple flask server to demo tunable fixtures"
-requires-python = ">=3.10"
+requires-python = ">=3.11"
 dependencies = [
     "flask",
     "psycopg[binary]",
