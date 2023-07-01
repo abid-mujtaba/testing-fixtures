@@ -1,3 +1,4 @@
+# pylint: disable=no-else-return
 """Implementation of new fixtures module."""
 
 from functools import partial, wraps
@@ -117,7 +118,6 @@ class Fixture(Generic[Y, D]):
 
         if typ is None:
             if self._entries == 0:  # Last exit (in rentrance) so finish up generator
-
                 try:
                     next(self._generator)
                 except StopIteration:
