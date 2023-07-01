@@ -9,9 +9,12 @@ authors = [
     { name = "Abid H. Mujtaba", email = "abid.naqvi83@gmail.com" }
 ]
 description = "New approach to Python test fixtures (compatible with pytest)"
-requires-python = ">=3.8"
+keywords = ["tests", "testing", "fixture", "fixtures"]
+readme = "README.md"
+requires-python = ">=3.10"
 dependencies = []
 classifiers = [
+    "License :: OSI Approved :: MIT License",
     "Programming Language :: Python :: 3",
     "Operating System :: OS Independent"
 ]
