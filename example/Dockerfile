@@ -2,7 +2,7 @@ FROM python:latest AS server
 
 RUN apt-get update \
  && apt-get install -y \
-        netcat
+        netcat-traditional
 
 WORKDIR /work
 
