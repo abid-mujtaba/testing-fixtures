@@ -3,7 +3,7 @@
 from typing import NewType, ParamSpec
 from example.server import dba
 
-from fixtures import fixture, FixtureDefinition
+from testing.fixtures import fixture, FixtureDefinition
 
 P = ParamSpec("P")
 Uuid = NewType("Uuid", int)

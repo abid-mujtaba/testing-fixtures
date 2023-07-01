@@ -9,7 +9,8 @@ services:
 
   server:
     build:
-      context: .
+      context: ..
+      dockerfile: example/Dockerfile
       target: server
     init: true
     volumes:
@@ -29,11 +30,11 @@ services:
 
   test:
     build:
-      context: .
+      context: ..
+      dockerfile: example/Dockerfile
       target: test
     init: true
     volumes:
-      - ./fixtures.py:/work/fixtures.py
       - ./tests:/work/tests
     depends_on:
       server:

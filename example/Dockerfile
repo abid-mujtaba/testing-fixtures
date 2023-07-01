@@ -6,8 +6,8 @@ RUN apt-get update \
 
 WORKDIR /work
 
-COPY pyproject.toml /work/
-COPY src /work/src
+COPY example/pyproject.toml /work/
+COPY example/src /work/src
 
 RUN --mount=type=cache,target=/root/.cache \
         python3.11 -m pip install -e .
@@ -15,9 +15,24 @@ RUN --mount=type=cache,target=/root/.cache \
 ENV PYTHONDONTWRITEBYTECODE=1
 
 
-FROM server AS test
+FROM python:latest AS builder
+
+WORKDIR /work
+
+COPY pyproject.toml README.md /work/
+COPY src /work/src
 
 RUN --mount=type=cache,target=/root/.cache \
-        python3.11 -m pip install -e .[dev]
+        python3.11 -m pip install build \
+ &&     python3.11 -m build
 
-COPY fixtures.py /work/
+
+FROM server AS test
+
+COPY --from=builder /work/dist/*.whl /tmp/
+RUN python3.11 -m pip install /tmp/*.whl
+
+RUN --mount=type=cache,target=/root/.cache \
+        python3.11 -m pip install \
+                pytest \
+                requests
