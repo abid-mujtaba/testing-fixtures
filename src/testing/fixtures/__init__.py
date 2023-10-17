@@ -1,6 +1,8 @@
 # pylint: disable=no-else-return
 """Implementation of new fixtures module."""
 
+# pylint: disable=no-member
+
 from functools import partial, wraps
 
 from types import TracebackType
@@ -242,7 +244,7 @@ def compose(
     fixture_.reset()
 
     def _decorator(
-        fixture_definition: Callable[Concatenate[Y, Q], FixtureDefinition[Z]]
+        fixture_definition: Callable[Concatenate[Y, Q], FixtureDefinition[Z]], /
     ) -> Callable[Q, FixtureDefinition[Z]]:
         """Decorator for fixture defns that injects value from composed fixture."""
 
