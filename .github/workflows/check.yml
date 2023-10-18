@@ -41,8 +41,6 @@ jobs:
   lint:
     name: run linters
     runs-on: ubuntu-latest
-    strategy:
-      fail-fast: false
     steps:
       - uses: actions/checkout@v3
         with:
@@ -57,3 +55,16 @@ jobs:
         run: tox -vv --notest -e lint-py312
       - name: Run test suite
         run: tox --skip-pkg-install -e lint-py312
+  test-example:
+    name: test example using docker compose
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - name: docker build
+        working-directory: example
+        run: docker compose build
+      - name: run test container
+        working-directory: example
+        run: docker compose run --rm test

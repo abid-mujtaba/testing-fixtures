@@ -20,7 +20,7 @@ services:
     environment:
       POSTGRES_PASSWORD: dbpswd
     command:
-      - python3.11
+      - python3.12
       - -m
       - example.server
     healthcheck:
@@ -42,7 +42,7 @@ services:
     environment:
       POSTGRES_PASSWORD: dbpswd
     command:
-      - python3.11
+      - python3.12
       - -m
       - pytest
       - -sqx
