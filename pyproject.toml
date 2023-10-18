@@ -11,7 +11,7 @@ authors = [
 description = "New approach to Python test fixtures (compatible with pytest)"
 keywords = ["tests", "testing", "fixture", "fixtures"]
 readme = "README.md"
-requires-python = ">=3.10"
+requires-python = ">=3.8"
 dependencies = []
 classifiers = [
     "License :: OSI Approved :: MIT License",

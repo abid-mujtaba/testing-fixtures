@@ -9,14 +9,15 @@ from types import TracebackType
 from typing import (
     Any,
     Callable,
-    Concatenate,
+    Dict,
     Generator,
     Generic,
     Optional,
-    ParamSpec,
+    Tuple,
     Type,
     TypeVar,
 )
+from typing_extensions import Concatenate, ParamSpec
 
 
 D = ParamSpec("D")  # Parameters injected into fixture definition
@@ -69,8 +70,8 @@ class Fixture(Generic[Y, D]):
         self._value: Y
 
         # Default values for fixture definition args and kwargs
-        self.args: tuple[Any, ...] = tuple()
-        self.kwargs: dict[str, Any] = {}
+        self.args: Tuple[Any, ...] = tuple()
+        self.kwargs: Dict[str, Any] = {}
 
         self._entries = 0  # Keep track of rentrance
 
