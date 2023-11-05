@@ -1,11 +1,12 @@
 name: deploy
 
-on: [push]
+on:
+  push:
+    branches:
+      - main
 
 jobs:
-  cd:
-    if: github.event_name == 'push' && github.ref == 'refs/head/main'
-
+  deploy:
     runs-on: ubuntu-latest
 
     steps:
