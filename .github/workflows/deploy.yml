@@ -18,8 +18,8 @@ jobs:
         with:
           python-version: 3.12
 
-      - name: Install semnatic-release
-        run: python -m pip install python-semantic-release
+      - name: Pre-requisites
+        run: python -m pip install build  # used by semantic-release to build package
 
       - name: Checkout repository
         uses: actions/checkout@v2
