@@ -24,12 +24,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v2
         with:
-          fetch-depth: 0
-
-      - name: Build distribution
-        run: |
-          python -m pip install build
-          python -m build
+          fetch-depth: 0  # semantic-release needs access to all previous commits
 
       - name: semantic-release
         uses: python-semantic-release/python-semantic-release@master
