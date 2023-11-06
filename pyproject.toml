@@ -45,7 +45,6 @@ packages = ["src/testing"]
 [tool.semantic_release]
 version_variable = "pyproject.toml:version"
 branch = "main"
-build_command = "pyproject-build"
 dist_path = "dist/"
 upload_to_release = true    # auto create Github Release
 upload_to_pypi = false
