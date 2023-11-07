@@ -10,6 +10,8 @@ jobs:
     if: github.event.commits[0].author.name != 'semantic-release'
 
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
 
     steps:
 
