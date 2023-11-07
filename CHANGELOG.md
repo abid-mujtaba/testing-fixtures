@@ -2,6 +2,22 @@
 
 
 
+## v0.1.2 (2023-11-07)
+
+### Ci
+
+* ci: increase semantic-release verbosity (#25)
+
+the creation of github release is failing while the new commit is being correctly pushed up
+increase semantic-release verbosity to figure out what is broken ([`a203260`](https://github.com/abid-mujtaba/testing-fixtures/commit/a20326034de77e28139fb45a135b4638a9b77f6a))
+
+### Fix
+
+* fix: add debug step after semantic-release (#26)
+
+curious to see if a step will run after the previous one fails ([`bd37aba`](https://github.com/abid-mujtaba/testing-fixtures/commit/bd37aba4c3ef6492b964dc7011241b8f6b42811b))
+
+
 ## v0.1.1 (2023-11-07)
 
 ### Fix
