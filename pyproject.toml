@@ -50,6 +50,7 @@ branch = "main"
 build_command = "pyproject-build"
 dist_path = "dist/"
 upload_to_release = true    # auto create Github Release
+ignore_token_for_push = true   # use SSH (deploy key) to push
 upload_to_pypi = false
 remove_dist = false
 
