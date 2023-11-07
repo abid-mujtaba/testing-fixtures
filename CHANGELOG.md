@@ -2,6 +2,16 @@
 
 
 
+## v0.1.3 (2023-11-07)
+
+### Fix
+
+* fix: specify github token env var (#27)
+
+GH Action makes the per-workflow GITHUB_TOKEN available as an env var while by default semantic-release looks for GH_TOKEN
+since we will be using the GITHUB_TOKEN to create a new release we add write contents permission to the token ([`f04af65`](https://github.com/abid-mujtaba/testing-fixtures/commit/f04af651f33544ad7d2d6213f13a1c9eaf76e312))
+
+
 ## v0.1.2 (2023-11-07)
 
 ### Ci
