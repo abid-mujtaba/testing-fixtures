@@ -33,4 +33,4 @@ jobs:
           ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
 
       - name: Semantic Release
-        run: semantic-release -v version
+        run: semantic-release -vv version
