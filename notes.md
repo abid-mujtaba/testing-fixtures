@@ -2,13 +2,17 @@
 
 ## CI/CD
 
-The `main` branch has comprehensive branch protections which are explicitly applicable
-to Administrators as well.
+The `main` branch has comprehensive branch protections
+including requiring a Pull Request.
 This prevents `python-semantic-release` from pushing commits to the `main` branch when
 it bumps the version (and modifies the changelog).
 
-The solution might be to use an SSH Deploy Key but that will require modifications to
+The solution is to use an SSH Deploy Key but that will require modifications to
 the deploy Github Action.
+
+*Note*: SSH Deploy keys use the "bypass branch protections" permission so
+"Do not allow bypassing the above settings" should be **unchecked**
+(in branch protection).
 
 ### Create SSH key
 
