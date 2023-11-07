@@ -34,3 +34,6 @@ jobs:
 
       - name: Semantic Release
         run: semantic-release -vv version
+
+      - name: Debug
+        run: echo "Hello, World!"
