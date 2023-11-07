@@ -2,6 +2,15 @@
 
 
 
+## v0.1.1 (2023-11-07)
+
+### Fix
+
+* fix: author of deploy commit for skipping (#24)
+
+semantic-release creates commits with author &#34;semantic-release&#34; which is what we need to use for skipping workflow for the deployed commit ([`98ed610`](https://github.com/abid-mujtaba/testing-fixtures/commit/98ed610380a5d83d96126f784201ce477bb9217b))
+
+
 ## v0.1.0 (2023-11-07)
 
 ### Ci
