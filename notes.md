@@ -14,10 +14,12 @@ the deploy Github Action.
 
 ```bash
 cd ~/.ssh
-ssh-keygen -t ed25519 -a 100 -f testing-fixtures-deploy
+ssh-keygen -t ed25519 -a 100 -C "git@github.com:abid-mujtaba/testing-fixtures.git" -f testing-fixtures-deploy
 ```
 
 *Note*: Do **not** set a passphrase.
+*Note*: Github requires a comment (-C) equal to the SSH url of the repo for a
+valid deploy key.
 
 ### Store keys
 
