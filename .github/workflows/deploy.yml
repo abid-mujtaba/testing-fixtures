@@ -34,10 +34,10 @@ jobs:
         with:
           ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
 
-      - name: Semantic Release
-        run: semantic-release -vv version
+      - name: Semantic Release Commit
+        run: semantic-release -vv --no-vcs-release version
+
+      - name: Semantic Release Github Release
+        run: semantic-release -vv --no-commit --no-changelog --no-push version
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Debug
-        run: echo "Hello, World!"
