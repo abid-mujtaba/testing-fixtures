@@ -2,6 +2,27 @@
 
 
 
+## v0.1.4 (2023-11-10)
+
+### Fix
+
+* fix: semantic-release CLI args (#30)
+
+fix typo in the CLI args passed to semantic-release
+the new args are specific to the &#39;version&#39; subcommand ([`829ddb0`](https://github.com/abid-mujtaba/testing-fixtures/commit/829ddb00eb3427f2cdb43abcb436361a59b47c80))
+
+* fix: split semantic release into two (#29)
+
+attempting to commit and push in one step (using the Deploy key) and
+creating the Github release in another step (using the Github Token) ([`d7f2974`](https://github.com/abid-mujtaba/testing-fixtures/commit/d7f2974af4b5b2b41da28d86c7c14a595a93a231))
+
+* fix: gh-token in semantic-release (#28)
+
+the per-workflow github-token is not available by default as an env var
+specify it explicitly using the `env` config section
+since we are going to be specifying it any way might as well make it available as GH_TOKEN, the default env var expected by semantic release ([`f1cfdab`](https://github.com/abid-mujtaba/testing-fixtures/commit/f1cfdab661b8af072612ba0bcd7134e301b8f8f5))
+
+
 ## v0.1.3 (2023-11-07)
 
 ### Fix
