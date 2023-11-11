@@ -2,6 +2,18 @@
 
 
 
+## v0.1.5 (2023-11-11)
+
+### Fix
+
+* fix: use admin pat (#31)
+
+- Trying out the admin PAT approach where we use a PAT with Admin
+  permissions in place of the auto-generated per-workflow Github Token
+- Document this new PAT approach in the notes
+- Configure the CI check to run on all branch pushes but NOT on tag push ([`72315db`](https://github.com/abid-mujtaba/testing-fixtures/commit/72315db1412d67b3e6650c641dff2b38a5a75ef5))
+
+
 ## v0.1.4 (2023-11-10)
 
 ### Fix
