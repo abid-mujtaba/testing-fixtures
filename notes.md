@@ -7,7 +7,36 @@ including requiring a Pull Request.
 This prevents `python-semantic-release` from pushing commits to the `main` branch when
 it bumps the version (and modifies the changelog).
 
-The solution is to use an SSH Deploy Key but that will require modifications to
+There are a couple of possible solutions to this.
+
+## CI/CD with Personal Access Token
+
+We will create a PAT (Personal Access Token) and
+explicitly give it permission to "bypass branch protections".
+The Github Action will have to be configured to use this specific PAT instead of
+the auto-generated per-workflow Github Access Token which does **not** have
+the required permission to push commits to a protected branch.
+
+### Create Personal Access Token
+
+1. In Github nagivate to (Personal) Settings > Developer Settings >
+   Personal Access Tokens > Fine-grained tokens > Generate new token
+1. Limit repository access to just this repo.
+1. Set the following Repository Permissions:
+
+   1. Administration: Read and Write
+   1. Contents: Read and Write
+   1. Metadata: Read-only (Mandatory)
+
+1. Leave everything else set to "No Access".
+1. Click `Generate Token`
+1. Copy generated token and place it in
+   the repo's Github Actions Secrets with name `PAT`
+   (Repo Settings > Secrets and variables > Actions > New repository secret)
+
+## CI/CD with SSH Deploy Key
+
+Another solution is to use an SSH Deploy Key but that will require modifications to
 the deploy Github Action.
 
 *Note*: SSH Deploy keys use the "bypass branch protections" permission so

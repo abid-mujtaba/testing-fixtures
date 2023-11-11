@@ -1,6 +1,8 @@
 name: check
 on:
   push:
+    branches:
+      - "**"  # Run on all branch pushes (and NOT tag pushes)
   pull_request:
   schedule:
     - cron: "0 2 * * *"
