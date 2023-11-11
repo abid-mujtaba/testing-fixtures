@@ -7,10 +7,6 @@ on:
   schedule:
     - cron: "0 2 * * *"
 
-concurrency:
-  group: check-${{ github.ref }}
-  cancel-in-progress: true
-
 jobs:
   test:
     name: test with ${{ matrix.py }} on ${{ matrix.os }}
