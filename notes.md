@@ -9,6 +9,13 @@ it bumps the version (and modifies the changelog).
 
 There are a couple of possible solutions to this.
 
+Unfortunately both solutions require the branch protection to **allow** admin uers
+the ability to bypass branch protections.
+To stop yourself from mistakenly pushing to the protected `main` branch from the CLI
+one can use a simple hack: `git config --global branch.main.pushRemote no_push`.
+This configures the remote for the `main` branch to the non-existent `no_push` remote.
+Trying to `git push` will cause an error because the remote cannot be found.
+
 ## CI/CD with Personal Access Token
 
 We will create a PAT (Personal Access Token) and
