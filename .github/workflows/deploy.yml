@@ -21,7 +21,7 @@ jobs:
           python-version: 3.12
 
       - name: Pre-requisites
-        run: python -m pip install build # python-semantic-release
+        run: python -m pip install build python-semantic-release
 
       - name: Checkout repository
         uses: actions/checkout@v2
@@ -29,17 +29,7 @@ jobs:
           fetch-depth: 0  # semantic-release needs access to all previous commits
           token: ${{ secrets.PAT }}
 
-      - name: Semantic Release
-        uses: python-semantic-release/python-semantic-release@master
-        with:
-          github_token: ${{ secrets.PAT }}
-
-      # - name: Semantic Release Commit
-      #   run: semantic-release -vv version --no-vcs-release
-      #   env:
-      #     GH_TOKEN: ${{ secrets.PAT }}
-
-      # - name: Semantic Release Github Release
-      #   run: semantic-release -vv version --no-commit --no-changelog --no-push
-      #   env:
-      #     GH_TOKEN: ${{ secrets.PAT }}
+      - name: Semantic Release Version
+        run: semantic-release version
+        env:
+          GH_TOKEN: ${{ secrets.PAT }}
