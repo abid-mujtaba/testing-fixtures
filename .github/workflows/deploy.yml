@@ -27,17 +27,21 @@ jobs:
         uses: actions/checkout@v2
         with:
           fetch-depth: 0  # semantic-release needs access to all previous commits
-          ssh-key: ${{ secrets.SSH_PRIVATE_KEY }}
+          token: ${{ secrets.PAT }}
+          # ssh-key: ${{ secrets.SSH_PRIVATE_KEY }}
 
-      - name: Setup SSH Agent
-        uses: webfactory/ssh-agent@v0.8.0
-        with:
-          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+      # - name: Setup SSH Agent
+      #   uses: webfactory/ssh-agent@v0.8.0
+      #   with:
+      #     ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
 
       - name: Semantic Release Commit
         run: semantic-release -vv version --no-vcs-release
+        env:
+          GH_TOKEN: ${{ secrets.PAT }}
 
       - name: Semantic Release Github Release
         run: semantic-release -vv version --no-commit --no-changelog --no-push
         env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${{ secrets.PAT }}
+          # GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
