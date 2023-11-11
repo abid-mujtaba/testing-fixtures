@@ -2,6 +2,18 @@
 
 
 
+## v0.1.7 (2023-11-11)
+
+### Fix
+
+* fix: disable cancel in progress (#34)
+
+unfortunately even though cancel-in-progress when
+a new commit is pushed to a branch while the previous build is running
+works BUT it sends an automated email which is indicative of a failure
+while this should technically be considered normal/desired behavior ([`632b84f`](https://github.com/abid-mujtaba/testing-fixtures/commit/632b84f68dc8563053a92eb36630d873a25fe316))
+
+
 ## v0.1.6 (2023-11-11)
 
 ### Fix
