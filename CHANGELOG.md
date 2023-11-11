@@ -2,6 +2,21 @@
 
 
 
+## v0.1.6 (2023-11-11)
+
+### Fix
+
+* fix: revert upstream semantic-release (#33)
+
+The upstream python-semantic-release Github Action is unable to build
+using pyproject-build ([`ec7e2c1`](https://github.com/abid-mujtaba/testing-fixtures/commit/ec7e2c1a0380eef33124e753b5429b63e837b172))
+
+* fix: switch to using upstream semantic-release action (#32)
+
+rather than install semantic-release and run it by hand we attempt to use
+the upstream python-semantic-release action ([`2fabb08`](https://github.com/abid-mujtaba/testing-fixtures/commit/2fabb0871a6121e993a87eb0e41d8130c7362ae2))
+
+
 ## v0.1.5 (2023-11-11)
 
 ### Fix
