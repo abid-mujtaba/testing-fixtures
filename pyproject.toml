@@ -43,16 +43,16 @@ only-packages = true
 packages = ["src/testing"]
 
 [tool.semantic_release]
-toml_version = [
+version_toml = [
     "pyproject.toml:project.version"
 ]
 branch = "main"
-build_command = "pyproject-build"
-dist_path = "dist/"
+# build_command = "pyproject-build"
+# dist_path = "dist/"
 upload_to_release = true    # auto create Github Release
-ignore_token_for_push = true   # use SSH (deploy key) to push
-upload_to_pypi = false
-remove_dist = false
+# ignore_token_for_push = true   # use SSH (deploy key) to push
+# upload_to_pypi = false
+# remove_dist = false
 
 [tool.pylint.'MESSAGE CONTROL']
 disable = [
