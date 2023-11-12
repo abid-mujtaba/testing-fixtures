@@ -1,4 +1,4 @@
-name: deploy
+name: publish
 
 on:
   push:
@@ -6,7 +6,7 @@ on:
       - main
 
 jobs:
-  test-release:
+  publish-test-pypi:
     if: github.event.commits[0].author.name == 'semantic-release'
 
     runs-on: ubuntu-latest
@@ -36,3 +36,32 @@ jobs:
         uses: pypa/gh-action-pypi-publish@release/v1
         with:
           repository-url: https://test.pypi.org/legacy/
+
+  publish-pypi:
+    needs: publish-test-pypi
+
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+
+    environment:
+      name: pypi
+      url: https://pypi.org/p/testing-fixtures
+
+    steps:
+      - name: Set up Python 3.12
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.12
+
+      - name: Pre-requisites
+        run: python -m pip install build
+
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Build
+        run: pyproject-build
+
+      - name: Publish package distributions to PyPI
+        uses: pypa/gh-action-pypi-publish@release/v1
