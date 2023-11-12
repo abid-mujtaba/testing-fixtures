@@ -2,6 +2,17 @@
 
 
 
+## v0.1.8 (2023-11-12)
+
+### Fix
+
+* fix: add deploy workflow (#35)
+
+- refactor old deploy to the version workflow since it was technically
+  all about bumping the version using semantic-release
+- add an actual deploy workflow which currently is publishing only to Test PyPI ([`2f14668`](https://github.com/abid-mujtaba/testing-fixtures/commit/2f14668bc5fa0b52307692cad7b1f116b75db072))
+
+
 ## v0.1.7 (2023-11-11)
 
 ### Fix
