@@ -274,7 +274,10 @@ def compose(
 
 def compose_noinject(
     fixture_: Fixture[Y, D]
-) -> Callable[[Callable[Q, FixtureDefinition[Z]]], Callable[Q, FixtureDefinition[Z]],]:
+) -> Callable[
+    [Callable[Q, FixtureDefinition[Z]]],
+    Callable[Q, FixtureDefinition[Z]],
+]:
     """
     Take a fixture and return a decorator for fixture definitions.
 
