@@ -2,6 +2,17 @@
 
 
 
+## v0.1.10 (2023-11-12)
+
+### Fix
+
+* fix: version bump (#37)
+
+- fix typo in semantic-release config for specifying location of version inside the project
+- Add --skip-build since semantic-release does not need to build the project to bump the version
+- Remove build specific config from semantic-release ([`5627ed1`](https://github.com/abid-mujtaba/testing-fixtures/commit/5627ed1bb064702d14b756d429abd4cba92aff00))
+
+
 ## v0.1.9 (2023-11-12)
 
 ### Fix
