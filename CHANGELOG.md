@@ -2,6 +2,19 @@
 
 
 
+## v0.2.2 (2023-11-12)
+
+### Fix
+
+* fix: semantic-release committer name (#42)
+
+the switch to the upstream semantic-release action meant that
+the committer name changed from semantic-release to github-actions
+
+we explicitly configure the action to use the former name since that is
+what is expected by the other publish workflow ([`480cf2a`](https://github.com/abid-mujtaba/testing-fixtures/commit/480cf2a68f11cd6b60a78a3d23187a24dcc14ff5))
+
+
 ## v0.2.1 (2023-11-12)
 
 ### Documentation
