@@ -41,49 +41,18 @@ the required permission to push commits to a protected branch.
    the repo's Github Actions Secrets with name `PAT`
    (Repo Settings > Secrets and variables > Actions > New repository secret)
 
-## CI/CD with SSH Deploy Key
-
-Another solution is to use an SSH Deploy Key but that will require modifications to
-the deploy Github Action.
-
-*Note*: SSH Deploy keys use the "bypass branch protections" permission so
-"Do not allow bypassing the above settings" should be **unchecked**
-(in branch protection).
-
-### Create SSH key
-
-```bash
-cd ~/.ssh
-ssh-keygen -t ed25519 -a 100 -C "git@github.com:abid-mujtaba/testing-fixtures.git" -f testing-fixtures-deploy
-```
-
-*Note*: Do **not** set a passphrase.
-*Note*: Github requires a comment (-C) equal to the SSH url of the repo for a
-valid deploy key.
-
-### Store keys
-
-- Add the public key as the Deploy key to the repo (Settings > Security > Deploy Keys)
-  and enable "Allow write access"
-- Add the private key as a Github Actions secret in the repo
-  (Settings > Security > Secrets and Variables > Actions)
-  under the name `SSH_PRIVATE_KEY`
-
 ### Checkout code
 
 By default the checkout action uses a one-time Github token.
-Since we want to use a deploy key to push commits we need to ensure that
-the same SSH key is used to checkout the code by configuring
-the checkout action to use an `ssh-key`.
+Since we want to use the PAT we need to configure the checkout action to use it.
 
-### SSH Agent
-
-We want `python-semantic-release` to automatically use the SSH key when
-it pushes the new commit.
-We use the `webfactory/ssh-agent` action to setup an SSH agent with
-the private Deploy key to make it available to `semantic-release` by default.
-
-Also need to set `ignore_token_for_push = false` to force `semantic-release` to use ssh.
+```yml
+- name: Checkout repository
+  uses: actions/checkout@v2
+  with:
+    fetch-depth: 0  # semantic-release needs access to all previous commits
+    token: ${{ secrets.PAT }}
+```
 
 ### Avoid workflow recursion
 
@@ -92,13 +61,28 @@ of workflow recursion.
 
 Github Actions deals with this automatically **if**
 the per-workflow Github token is used.
-We are using a Deploy SSH key instead so will have to deal with recursion ourselves.
+We are using an admin PAT so will have to deal with recursion ourselves.
 
-To avoid that we add an `if` condition to the `release` job so that it is skipped if
-the top commit is authored by "Github Actions",
-a user which the workflow configures before it pushes a deploy commit.
+To avoid that we add an `if` condition to the `version` job so that it is skipped if
+the top commit is authored by "semantic-release",
+the user which python-semantic-release uses to push the bumped version commit.
 
 ```yaml
 release:
-    if: github.event.commits[0].author.name != 'GitHub Actions'
+    if: github.event.commits[0].author.name != 'semantic-release'
 ```
+
+## PyPI Publication
+
+1. Login to https://test.pypi.org/
+1. Select your project
+1. Click on the `Manage` button
+1. In the left-pane click `Publishing`
+1. Enable two-factor authentication (this is prerequisite for using Trusted Publishers)
+1. Github is currently the only trusted publisher.
+   Configure it:
+
+   1. Owner: `abid-mujtaba`
+   1. Repository: `testing-fixtures`
+   1. Workflow name: `deploy.yml` (should be inside `.github/workflows/`)
+   1. **No** environment set
