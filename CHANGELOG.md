@@ -2,6 +2,16 @@
 
 
 
+## v0.1.9 (2023-11-12)
+
+### Fix
+
+* fix: deploy condition (#36)
+
+there was a typo in the if condition in the test-release job
+the correct context is github.event (singular) ([`aa58e98`](https://github.com/abid-mujtaba/testing-fixtures/commit/aa58e987b5cb6ad9c0621f89d0d2dd2459afae50))
+
+
 ## v0.1.8 (2023-11-12)
 
 ### Fix
