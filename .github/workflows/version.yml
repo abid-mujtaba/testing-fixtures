@@ -13,13 +13,13 @@ jobs:
 
     steps:
 
-      - name: Set up Python 3.12
-        uses: actions/setup-python@v2
-        with:
-          python-version: 3.12
+      # - name: Set up Python 3.12
+      #   uses: actions/setup-python@v2
+      #   with:
+      #     python-version: 3.12
 
-      - name: Pre-requisites
-        run: python -m pip install python-semantic-release
+      # - name: Pre-requisites
+      #   run: python -m pip install python-semantic-release
 
       - name: Checkout repository
         uses: actions/checkout@v2
@@ -27,7 +27,13 @@ jobs:
           fetch-depth: 0  # semantic-release needs access to all previous commits
           token: ${{ secrets.PAT }}
 
+      # - name: Semantic Release Version
+      #   run: semantic-release version --skip-build
+      #   env:
+      #     GH_TOKEN: ${{ secrets.PAT }}
+
       - name: Semantic Release Version
-        run: semantic-release version --skip-build
-        env:
-          GH_TOKEN: ${{ secrets.PAT }}
+        run: python-semantic-release/python-semantic-release@v8.3.0
+        with:
+          github_token: ${{ secrets.PAT }}
+          skip_build: true
