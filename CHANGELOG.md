@@ -2,6 +2,35 @@
 
 
 
+## v0.2.1 (2023-11-12)
+
+### Documentation
+
+* docs: update notes (#39)
+
+- remove discussion of SSH Deploy Keys
+- add discussion of trusted publisher config in PyPI ([`efd7599`](https://github.com/abid-mujtaba/testing-fixtures/commit/efd759917e7a1e79a7fa9c252185cffc3f348d81))
+
+### Fix
+
+* fix: typo in version workflow (#41)
+
+Typo in the workflow yaml ([`0f18bbb`](https://github.com/abid-mujtaba/testing-fixtures/commit/0f18bbb3c382cc7d894772044fc113139085d6ef))
+
+* fix: use upstream semantic-release action (#40)
+
+* ci: refactor build command
+
+use the more popular `python -m build` instead of `pyproject-build`
+since they are exactly equivalent
+
+* fix: switch to upstream semantic-release action
+
+trying once again with the admin PAT and an explicit skip_build option
+since the primary problem with the upstream action was failure to build
+but we no longer need to build just to bump and release the new version ([`75b7cad`](https://github.com/abid-mujtaba/testing-fixtures/commit/75b7cadaf4d531098fa42c6edc0efc8fc386c731))
+
+
 ## v0.2.0 (2023-11-12)
 
 ### Feature
