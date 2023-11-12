@@ -2,6 +2,19 @@
 
 
 
+## v0.2.0 (2023-11-12)
+
+### Feature
+
+* feat: publish to pypi (#38)
+
+- rename file from deploy.yml to publish.yml since publication is
+  the more accurate verb when it comes to Python and PyPI
+- add additional config to publish.yml for publising to PyPI if
+  publication to TestPyPI succeeds
+- remove dead code from pyproject.toml ([`f8a6cea`](https://github.com/abid-mujtaba/testing-fixtures/commit/f8a6cea0eab6cdf1ebd75b861bbfeec2b39ede67))
+
+
 ## v0.1.10 (2023-11-12)
 
 ### Fix
