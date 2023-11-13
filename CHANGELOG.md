@@ -2,6 +2,17 @@
 
 
 
+## v0.2.4 (2023-11-13)
+
+### Fix
+
+* fix: remove unnecessary fetch-depth config (#45)
+
+- the only component of CI/CD that needs access to the full commit history is
+the version bumping logic (sematnic-release)
+- bring the setup-python actions into consistency with each other ([`16fad96`](https://github.com/abid-mujtaba/testing-fixtures/commit/16fad96401f08cac6a21475bf591833f2c81f6c3))
+
+
 ## v0.2.3 (2023-11-13)
 
 ### Ci
