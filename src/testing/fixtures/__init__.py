@@ -3,22 +3,22 @@
 
 # pylint: disable=no-member
 
-from functools import partial, wraps
+from __future__ import annotations
 
-from types import TracebackType
+from functools import partial, wraps
 from typing import (
+    TYPE_CHECKING,
     Any,
     Callable,
-    Dict,
     Generator,
     Generic,
-    Optional,
-    Tuple,
-    Type,
     TypeVar,
 )
-from typing_extensions import Concatenate, ParamSpec
 
+from typing_extensions import Concatenate, ParamSpec, Self
+
+if TYPE_CHECKING:
+    from types import TracebackType
 
 D = ParamSpec("D")  # Parameters injected into fixture definition
 T = ParamSpec("T")  # Test function parameters
@@ -58,7 +58,7 @@ class Fixture(Generic[Y, D]):
     various levels by mostly being closed over.
     """
 
-    def __init__(self, generator_func: Callable[D, FixtureDefinition[Y]]):
+    def __init__(self, generator_func: Callable[D, FixtureDefinition[Y]]) -> None:
         """
         Create a Fixture object.
 
@@ -70,13 +70,13 @@ class Fixture(Generic[Y, D]):
         self._value: Y
 
         # Default values for fixture definition args and kwargs
-        self.args: Tuple[Any, ...] = tuple()
-        self.kwargs: Dict[str, Any] = {}
+        self.args: tuple[Any, ...] = ()
+        self.kwargs: dict[str, Any] = {}
 
         self._entries = 0  # Keep track of rentrance
 
-    def set(self, *d_args: D.args, **d_kwargs: D.kwargs) -> "Fixture[Y, D]":
-        """Method for setting the args and kwargs passed down to the fixture defn."""
+    def set(self, *d_args: D.args, **d_kwargs: D.kwargs) -> Self:  # noqa: A003
+        """Set the args and kwargs passed down to the fixture definition."""
         self.args = d_args
         self.kwargs = d_kwargs
 
@@ -84,10 +84,11 @@ class Fixture(Generic[Y, D]):
 
     def reset(self) -> None:
         """Reset the fixture definition args and kwargs."""
-        self.args = tuple()
+        self.args = ()
         self.kwargs = {}
 
     def __enter__(self) -> Y:
+        """Deal with re-entrance in this context manager."""
         self._entries += 1
 
         if self._entries == 1:  # First entry
@@ -106,67 +107,82 @@ class Fixture(Generic[Y, D]):
 
             try:
                 self._value = next(self._generator)
-                return self._value
 
             except StopIteration:
-                raise RuntimeError("generator didn't yield") from None
+                err_msg = "generator didn't yield"
+                raise RuntimeError(err_msg) from None
+
+            else:
+                return self._value
 
         else:
             return self._value
 
+    def _exit_no_exception(self) -> bool:
+        """Handle exit when no exception was raised."""
+        if self._entries == 0:  # Last exit (in rentrance) so finish up generator
+            try:
+                next(self._generator)
+            except StopIteration:
+                # Now that we are done with the fixture context manager we reset it
+                self.reset()
+                return False
+            else:
+                err_msg = "generator did not stop"
+                raise RuntimeError(err_msg)
+        else:
+            return False
+
     def __exit__(  # pylint: disable=R0912
-        self, typ: Optional[Type[Exception]], value: Exception, traceback: TracebackType
+        self,
+        typ: type[BaseException] | None,
+        value: BaseException | None,
+        traceback: TracebackType | None,
     ) -> bool:
+        """Handle exception raised within context manager."""
         self._entries -= 1
 
         if typ is None:
-            if self._entries == 0:  # Last exit (in rentrance) so finish up generator
-                try:
-                    next(self._generator)
-                except StopIteration:
-                    # Now that we are done with the fixture context manager we reset it
-                    self.reset()
-                    return False
-                else:
-                    raise RuntimeError("generator didn't stop")
-            else:
+            return self._exit_no_exception()
+
+        # An excception has been raised
+        if value is None:
+            # Need to force instantiation so we can reliably
+            # tell if we get the same exception back
+            value = typ()
+        try:
+            self._generator.throw(typ, value, traceback)
+        except StopIteration as exc:
+            # Suppress StopIteration *unless* it's the same exception that
+            # was passed to throw().  This prevents a StopIteration
+            # raised inside the "with" statement from being suppressed.
+            return exc is not value
+        except RuntimeError as exc:
+            # Don't re-raise the passed in exception. (issue27122)
+            if exc is value:
                 return False
-        else:
-            if value is None:
-                # Need to force instantiation so we can reliably
-                # tell if we get the same exception back
-                value = typ()
-            try:
-                self._generator.throw(typ, value, traceback)
-            except StopIteration as exc:
-                # Suppress StopIteration *unless* it's the same exception that
-                # was passed to throw().  This prevents a StopIteration
-                # raised inside the "with" statement from being suppressed.
-                return exc is not value
-            except RuntimeError as exc:
-                # Don't re-raise the passed in exception. (issue27122)
-                if exc is value:
-                    return False
-                # Avoid suppressing if a StopIteration exception
-                # was passed to throw() and later wrapped into a RuntimeError
-                # (see PEP 479 for sync generators; async generators also
-                # have this behavior). But do this only if the exception wrapped
-                # by the RuntimeError is actually Stop(Async)Iteration (see
-                # issue29692).
-                if isinstance(value, StopIteration) and exc.__cause__ is value:
-                    return False
+            # Avoid suppressing if a StopIteration exception
+            # was passed to throw() and later wrapped into a RuntimeError
+            # (see PEP 479 for sync generators; async generators also
+            # have this behavior). But do this only if the exception wrapped
+            # by the RuntimeError is actually Stop(Async)Iteration (see
+            # issue29692).
+            if isinstance(value, StopIteration) and exc.__cause__ is value:
+                return False
+            raise
+        except BaseException as exc:  # noqa: BLE001 pylint: disable=W0703
+            # only re-raise if it's *not* the exception that was
+            # passed to throw(), because __exit__() must not raise
+            # an exception unless __exit__() itself failed.  But throw()
+            # has to raise the exception to signal propagation, so this
+            # fixes the impedance mismatch between the throw() protocol
+            # and the __exit__() protocol.
+            if exc is not value:
                 raise
-            except BaseException as exc:  # pylint: disable=W0703
-                # only re-raise if it's *not* the exception that was
-                # passed to throw(), because __exit__() must not raise
-                # an exception unless __exit__() itself failed.  But throw()
-                # has to raise the exception to signal propagation, so this
-                # fixes the impedance mismatch between the throw() protocol
-                # and the __exit__() protocol.
-                if exc is not value:
-                    raise
-                return False
-            raise RuntimeError("generator didn't stop after throw()")
+            return False
+
+        err_msg = "generator did not stop after throw()"
+        raise RuntimeError(err_msg)
 
     def __call__(
         self, test_function: Callable[Concatenate[Y, T], None]
@@ -178,7 +194,6 @@ class Fixture(Generic[Y, D]):
         func, now context manager) as the first argument of the test function.
         After decoration the test appears to have one less argument (the first one).
         """
-
         # Create a temporary reduced function to wrap the signature of the function
         # after it has been decorated
         reduced_func = partial(test_function, None)
@@ -192,7 +207,7 @@ class Fixture(Generic[Y, D]):
 
         @wraps(reduced_func)
         def _inner(*t_args: T.args, **t_kwargs: T.kwargs) -> None:
-            """Decorated test function which has the fixture yielded value injected."""
+            """Compose fixture and inject yielded value into wrapped test function."""
             # Use the closed over values to set the fixture definition args and kwargs
             self.set(*fixture_args, **fixture_kwargs)
 
@@ -208,9 +223,11 @@ class Fixture(Generic[Y, D]):
     def __del__(self) -> None:
         """Validate usage on garbage collection."""
         if self._entries != 0:
-            raise RuntimeError(
-                f"Fixture {self._func.__name__} destroyed while all rentries were not exited"
+            err_msg = (
+                f"Fixture {self._func.__name__} destroyed while "
+                "all rentries were not exited"
             )
+            raise RuntimeError(err_msg)
 
 
 # We declare 'fixture' to be an alias for the Fixture class
@@ -235,7 +252,6 @@ def compose(
     Injects a first argument into the fixture definition returning a simplified
     definition (generator function).
     """
-
     # Store the fixture (being composed) definition args and kwargs here allowing
     # it to be closed over
     fixture_args = fixture_.args
@@ -247,17 +263,16 @@ def compose(
     def _decorator(
         fixture_definition: Callable[Concatenate[Y, Q], FixtureDefinition[Z]], /
     ) -> Callable[Q, FixtureDefinition[Z]]:
-        """Decorator for fixture defns that injects value from composed fixture."""
+        """Decorate fixture definition and inject value from composed fixture."""
 
         @wraps(fixture_definition)
         def _inner(*d_args: Q.args, **d_kwargs: Q.kwargs) -> FixtureDefinition[Z]:
             """
-            Replacement for fixture defintion.
+            Compose fixture and inject its yielded value into decorated fixture.
 
             The first value is injected from the composed fixture resulting in a
             simpler fixture definition (generator function).
             """
-
             # Set definition args and kwargs for the fixture being composed using
             # the values closed over earlier.
             # This allows for the definition args and kwargs to be injected from the
@@ -274,13 +289,15 @@ def compose(
 
 def compose_noinject(
     fixture_: Fixture[Y, D]
-) -> Callable[[Callable[Q, FixtureDefinition[Z]]], Callable[Q, FixtureDefinition[Z]],]:
+) -> Callable[
+    [Callable[Q, FixtureDefinition[Z]]],
+    Callable[Q, FixtureDefinition[Z]],
+]:
     """
     Take a fixture and return a decorator for fixture definitions.
 
     Does NOT inject value yielded from fixture into wrapped definition.
     """
-
     # Store the fixture (being composed) definition args and kwargs here allowing
     # it to be closed over
     fixture_args = fixture_.args
@@ -292,17 +309,16 @@ def compose_noinject(
     def _decorator(
         fixture_definition: Callable[Q, FixtureDefinition[Z]]
     ) -> Callable[Q, FixtureDefinition[Z]]:
-        """Decorator for fixture defns that does NOT inject yielded value."""
+        """Decorate fixture definition such that it does NOT inject yielded value."""
 
         @wraps(fixture_definition)
         def _inner(*d_args: Q.args, **d_kwargs: Q.kwargs) -> FixtureDefinition[Z]:
             """
-            Replacement for fixture defintion.
+            Use fixture but ignore its yielded value (no injection).
 
             The first value is injected from the composed fixture resulting in a
             simpler fixture definition (generator function).
             """
-
             # Set definition args and kwargs for the fixture being composed using
             # the values closed over earlier.
             # This allows for the definition args and kwargs to be injected from the
@@ -324,12 +340,11 @@ def noinject(
 
     def _decorator(test_function: Callable[T, None]) -> Callable[T, None]:
         """Non-injecting decorator for test functions."""
-
         fixture_args = fixture_.args
         fixture_kwargs = fixture_.kwargs
 
         def _inner(*args: T.args, **kwargs: T.kwargs) -> None:
-            """Replacement for test function but with no value yielded."""
+            """Run test function while ignoring the value yielded by the fixture."""
             fixture_.set(*fixture_args, **fixture_kwargs)
 
             with fixture_:  # Yielded value is being ignored

@@ -1,17 +1,32 @@
 """Test the new fixtures."""
 
 import pytest
-
 from testing.fixtures import noinject
 
-from .utils import fixture_a, Ao
-from .utils import fixture_b, Bi1, Bi2, Bo
-from .utils import fixture_c, Co
-from .utils import fixture_d, Di, Do
-from .utils import fixture_e, Eo
-from .utils import fixture_f, Fi, Fo
-from .utils import fixture_g, Gi, Go
-from .utils import fixture_h, Hi, Ho
+from .utils import (
+    Ao,
+    Bi1,
+    Bi2,
+    Bo,
+    Co,
+    Di,
+    Do,
+    Eo,
+    Fi,
+    Fo,
+    Gi,
+    Go,
+    Hi,
+    Ho,
+    fixture_a,
+    fixture_b,
+    fixture_c,
+    fixture_d,
+    fixture_e,
+    fixture_f,
+    fixture_g,
+    fixture_h,
+)
 
 
 @fixture_a
@@ -59,7 +74,7 @@ def test_c(c: Co) -> None:
 @fixture_c
 @fixture_b
 def test_b_and_c(b: Bo, c: Co) -> None:
-    """Use fixture_b both in test and composed via c with its state set at composition."""
+    """Use fixture_b both in test & composed via c with its state set at composition."""
     assert b == {"b1": 13, "b2": 1.44}
     assert c == {"c": {"b1": 13, "b2": 1.44}}
 
@@ -68,7 +83,7 @@ def test_b_and_c(b: Bo, c: Co) -> None:
 @fixture_b
 @fixture_c
 def test_invalid_b_and_c(c: Co, b: Bo) -> None:
-    """Use fixture_b both in test and composed via c with its state set at composition."""
+    """Use fixture_b both in test & composed via c with its state set at composition."""
     assert b == {"b1": 13, "b2": 1.44}
     assert c == {"c": {"b1": 13, "b2": 1.44}}
 
