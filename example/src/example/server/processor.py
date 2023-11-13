@@ -2,10 +2,9 @@
 
 import logging
 
-from flask import Flask, jsonify, Response, request
+from flask import Flask, Response, jsonify, request
 
 from . import dba
-
 
 logger = logging.getLogger(__name__)
 app = Flask(__name__)
@@ -20,11 +19,9 @@ def process_test() -> Response:
 
 @app.route("/compute", methods=["POST"])
 def process_compute() -> Response:
-    """The /compute end-point fetches operation corresponding to uuid and applies it."""
+    """Fetch operation corresponding to uuid and apply it."""
     payload = request.json
     logger.info("Request to /compute: %s", payload)
-
-    assert payload
 
     uuid = payload["uuid"]
     value = payload["input"]

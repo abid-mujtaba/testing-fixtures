@@ -2,15 +2,14 @@
 
 from typing import NewType, TypedDict
 
-from testing.fixtures import compose, compose_noinject, fixture, FixtureDefinition
-
+from testing.fixtures import FixtureDefinition, compose, compose_noinject, fixture
 
 Ao = NewType("Ao", str)
 
 
 @fixture
 def fixture_a() -> FixtureDefinition[Ao]:
-    """A simple fixture that yields a string."""
+    """Fixture that yields a string."""
     print("Entering a")
 
     yield Ao("a")
@@ -34,7 +33,7 @@ class Bo(TypedDict):
 
 @fixture
 def fixture_b(b1: Bi1, b2: Bi2) -> FixtureDefinition[Bo]:
-    """A fixture that takes injected value from the test function decoration."""
+    """Fixture that takes injected value from the test function decoration."""
     print("Entering b")
 
     yield Bo(b1=b1, b2=b2)
@@ -51,7 +50,7 @@ class Co(TypedDict):
 @fixture
 @compose(fixture_b.set(Bi1(13), Bi2(1.44)))
 def fixture_c(b: Bo) -> FixtureDefinition[Co]:
-    """A fixture that takes an injected value from ANOTHER fixture."""
+    """Fixture that takes an injected value from ANOTHER fixture."""
     print("Entering c")
 
     yield Co(c=b)
@@ -77,7 +76,7 @@ class Do(TypedDict):
 @compose(fixture_b.set(Bi1(123), Bi2(1.23)))
 def fixture_d(b: Bo, d: Di) -> FixtureDefinition[Do]:
     """
-    A fixture that takes injected value from two places.
+    Fixture that takes injected value from two places.
 
     From both the test function site AND from ANOTHER fixture.
     """
@@ -94,7 +93,7 @@ VALUE_E = {"value": 0}
 
 @fixture
 def fixture_e() -> FixtureDefinition[Eo]:
-    """A fixture that mutates the inject value before yielding it, then unmutates it."""
+    """Fixture that mutates the inject value before yielding it, then unmutates it."""
     print("Entering e")
     VALUE_E["value"] += 1
 
@@ -108,7 +107,7 @@ Fi = NewType("Fi", int)
 
 
 class Fo(TypedDict):
-    """Output type for fixture_f encapsulating injection from fixture_e and test site"""
+    """Output type for fixture_f encapsulating injection from fixture_e & test site."""
 
     e: Eo
     f: Fi
@@ -117,7 +116,7 @@ class Fo(TypedDict):
 @fixture
 @compose(fixture_e)
 def fixture_f(e: Eo, f: Fi) -> FixtureDefinition[Fo]:
-    """A fixture that gets state from both test site and fixture_e (mutating)."""
+    """Fixture that gets state from both test site and fixture_e (mutating)."""
     print("Entering f")
     try:
         yield Fo(e=e, f=f)
@@ -129,7 +128,7 @@ Gi = NewType("Gi", int)
 
 
 class Go(TypedDict):
-    """Output type for fixture_g encapsulating injection from fixture_b and test site."""
+    """Output type for fixture_g encapsulating injection from fixture_b & test site."""
 
     b: Bo
     g: Gi

@@ -1,9 +1,10 @@
 """Utilities for testing such as shared constants and fixtures."""
 
 from typing import NewType, ParamSpec
-from example.server import dba
 
-from testing.fixtures import fixture, FixtureDefinition
+from testing.fixtures import FixtureDefinition, fixture
+
+from example.server import dba
 
 P = ParamSpec("P")
 Uuid = NewType("Uuid", int)

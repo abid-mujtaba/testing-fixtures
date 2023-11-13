@@ -1,11 +1,12 @@
 """DB (Postgres) Accessor."""
 
-from contextlib import contextmanager
+from __future__ import annotations
+
 import os
-from typing import Any, cast, Iterator, Optional
+from contextlib import contextmanager
+from typing import Any, Iterator, cast
 
 import psycopg
-
 
 DB_USER = "postgres"
 DB_PASSWORD = os.environ["POSTGRES_PASSWORD"]
@@ -16,7 +17,7 @@ Record = dict[str, Any]  # Object returned by cursor SELECT (using dict row)
 
 
 @contextmanager
-def get_cursor(autocommit: bool = False) -> Iterator[psycopg.Cursor[Optional[Record]]]:
+def get_cursor(autocommit: bool = False) -> Iterator[psycopg.Cursor[Record | None]]:
     """Create cursor to postgres DB."""
     conn = psycopg.connect(
         autocommit=autocommit, user=DB_USER, password=DB_PASSWORD, host=DB_HOST
@@ -27,7 +28,7 @@ def get_cursor(autocommit: bool = False) -> Iterator[psycopg.Cursor[Optional[Rec
         yield cursor
 
 
-def get_operation(uuid: int) -> Optional[str]:
+def get_operation(uuid: int) -> str | None:
     """Get operation for given uuid from operations table."""
     with get_cursor() as cursor:
         query = """
