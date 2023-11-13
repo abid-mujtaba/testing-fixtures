@@ -2,6 +2,42 @@
 
 
 
+## v0.2.3 (2023-11-13)
+
+### Ci
+
+* ci: format config (#43)
+
+no functional change just add some whitespace and
+remove unnecessary name of the checkout step ([`40e8fe2`](https://github.com/abid-mujtaba/testing-fixtures/commit/40e8fe2b360d7cb604b940d5a3dda6062b9857f0))
+
+### Fix
+
+* fix: use ruff check and format (#44)
+
+* ci: add ruff (check &amp; format), remove black
+
+- ruff check is fantastic
+- ruff format is a drop-in replacement for black (in particular the upcoming preview)
+  the only places where ruff disagrees with black I agree with the former
+
+* ci: configure ruff
+
+- select all rules
+- disable the 4 rules globally that conflict with ruff format
+- disable certain rules on a per-file basis
+  - assert is allowed in tests
+  - we are using print in the unit tests to track execution
+
+* fix: ruff errors
+
+fix all errors detected by ruff after we turned on nearly all the rules
+
+* ci: configure vscode to use ruff
+
+helps find and fix ruff errors ([`c1b1526`](https://github.com/abid-mujtaba/testing-fixtures/commit/c1b1526b1e9eec471888f94d750b82bb414e7a14))
+
+
 ## v0.2.2 (2023-11-12)
 
 ### Fix
