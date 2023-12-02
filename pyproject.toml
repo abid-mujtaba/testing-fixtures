@@ -12,7 +12,9 @@ description = "New approach to Python test fixtures (compatible with pytest)"
 keywords = ["tests", "testing", "fixture", "fixtures"]
 readme = "README.md"
 requires-python = ">=3.8"
-dependencies = []
+dependencies = [
+    "typing-extensions"
+]
 classifiers = [
     "License :: OSI Approved :: MIT License",
     "Programming Language :: Python :: 3",
