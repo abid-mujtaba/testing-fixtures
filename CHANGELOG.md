@@ -2,6 +2,40 @@
 
 
 
+## v0.3.0 (2023-12-02)
+
+### Ci
+
+* ci: add semantic-pr workflow (#47)
+
+Ensure that the PR title follows semantic commit style
+otherwise version bumping won&#39;t work because
+it looks at the commit titles to figure out if a bump is required and
+the category of bump ([`509ac27`](https://github.com/abid-mujtaba/testing-fixtures/commit/509ac27238db5f57ef58548f847fbb1b0682adb3))
+
+### Feature
+
+* feat: bump version to include deps (#49)
+
+- Need a commit using semantic convention to trigger a bump version to
+  pick up the latest change which was to add typing-extension as a dep ([`9d585d8`](https://github.com/abid-mujtaba/testing-fixtures/commit/9d585d827994dfa853e08738b64291b48218f6cb))
+
+### Unknown
+
+* Bump version to incorporate new deps (#48)
+
+feat: bump version to incorporate new deps
+
+- typing-extensions was added as a dependency but was not incorporated
+  because the commit didn&#39;t have semantic style.
+- we have added a github action to validate that can no longer happen
+- still need to bump the version to include the new dep ([`6ba5364`](https://github.com/abid-mujtaba/testing-fixtures/commit/6ba536441a62bcec013f3f9c00b43b24cdf10773))
+
+* Add typing-extensions as dependency (#46)
+
+Used by library to support lower versions of Python ([`7d2b4a3`](https://github.com/abid-mujtaba/testing-fixtures/commit/7d2b4a39b0172fe257bcc43bbf02fca2b8f03b0d))
+
+
 ## v0.2.4 (2023-11-13)
 
 ### Fix
