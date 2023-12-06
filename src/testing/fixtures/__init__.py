@@ -241,7 +241,7 @@ Z = TypeVar("Z")
 
 
 def compose(
-    fixture_: Fixture[Y, D]
+    fixture_: Fixture[Y, D],
 ) -> Callable[
     [Callable[Concatenate[Y, Q], FixtureDefinition[Z]]],
     Callable[Q, FixtureDefinition[Z]],
@@ -261,7 +261,8 @@ def compose(
     fixture_.reset()
 
     def _decorator(
-        fixture_definition: Callable[Concatenate[Y, Q], FixtureDefinition[Z]], /
+        fixture_definition: Callable[Concatenate[Y, Q], FixtureDefinition[Z]],
+        /,
     ) -> Callable[Q, FixtureDefinition[Z]]:
         """Decorate fixture definition and inject value from composed fixture."""
 
@@ -288,7 +289,7 @@ def compose(
 
 
 def compose_noinject(
-    fixture_: Fixture[Y, D]
+    fixture_: Fixture[Y, D],
 ) -> Callable[
     [Callable[Q, FixtureDefinition[Z]]],
     Callable[Q, FixtureDefinition[Z]],
@@ -307,7 +308,7 @@ def compose_noinject(
     fixture_.reset()
 
     def _decorator(
-        fixture_definition: Callable[Q, FixtureDefinition[Z]]
+        fixture_definition: Callable[Q, FixtureDefinition[Z]],
     ) -> Callable[Q, FixtureDefinition[Z]]:
         """Decorate fixture definition such that it does NOT inject yielded value."""
 
@@ -334,7 +335,7 @@ def compose_noinject(
 
 
 def noinject(
-    fixture_: Fixture[Y, D]
+    fixture_: Fixture[Y, D],
 ) -> Callable[[Callable[T, None]], Callable[T, None]]:
     """Transform a Fixture to make it non-injecting (absorb yielded value)."""
 
