@@ -2,6 +2,42 @@
 
 
 
+## v0.4.0 (2023-12-09)
+
+### Chore
+
+* chore: refactor tox requirements (#52)
+
+- Put the test deps in requirements-test.txt.
+- Put the lint deps in requirements-lint.txt and also include
+  requirements-test.txt in it.
+- Create a new dev-py312 environment which uses an editable install.
+  This will serve as the development environment for VS Code. ([`d29cb8f`](https://github.com/abid-mujtaba/testing-fixtures/commit/d29cb8f46fc9d7567fbcf1c4991aa87dbd7f2dc7))
+
+### Documentation
+
+* docs: added notes on evolution uptill Nov 2023 (#51)
+
+documented the new CI/CD pipeline ([`748e2c8`](https://github.com/abid-mujtaba/testing-fixtures/commit/748e2c8a98cf4355cefab41708b3334c10cfc151))
+
+### Feature
+
+* feat: add commonly used utility fixtures (#53)
+
+- add a new `.utils` submodule
+- add create_temp_dir and create_temp_cwd utility fixtures
+- refactor vscode settings
+- make mypy strict ([`9edf0f4`](https://github.com/abid-mujtaba/testing-fixtures/commit/9edf0f4e7dccd0f77f4042a3831155d12cfd1f9c))
+
+### Style
+
+* style(core): apply new ruff format rules (#50)
+
+ruff has acquired a new format rule where even function definitions with
+a single argument that are split across multiple lines should have a
+trailing comma after that single argument ([`ae2c5fc`](https://github.com/abid-mujtaba/testing-fixtures/commit/ae2c5fc0248939bf32f2577b4a677060e36614f8))
+
+
 ## v0.3.0 (2023-12-02)
 
 ### Ci
