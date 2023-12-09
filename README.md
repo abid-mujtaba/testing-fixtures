@@ -5,6 +5,14 @@ This repo contains an implementation of a new approach to fixtures for use with
 In addition we demonstrate how to use these new fixtures in both unit and
 integration tests.
 
+## Utility Fixtures
+
+The library also comes with some utility fixtures that often come in handy.
+For example `create_temp_dir`
+(injects the `Path` to a temporary directory into the test using the fixture) and
+`create_temp_cwd` (switches the cwd to a temporary directory and
+injects its `Path` into the test).
+
 ## Project Evolution
 
 The evolution of this project is being tracked in this [doc](./evolution.md).

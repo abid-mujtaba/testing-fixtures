@@ -51,6 +51,9 @@ version_toml = [
 branch = "main"
 upload_to_release = true    # auto create Github Release
 
+[tool.mypy]
+strict = true
+
 [tool.ruff]
 select = ["ALL"]
 ignore = [
