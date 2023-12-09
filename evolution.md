@@ -21,3 +21,9 @@ He suggested that a 2-pronged approach be taken:
 ## Jul 2023
 
 - Based on the feedback from PyCon @abid-mujtaba published `testing-fixtures` to PyPI.
+
+## Nov 2023
+
+- CI/CD was implemented including a full matrix of tests across 5 versions of Python and
+  3 different OSes.
+- Auto version bumping and auto publishing to PyPI was configured.
