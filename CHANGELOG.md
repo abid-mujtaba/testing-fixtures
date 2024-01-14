@@ -2,6 +2,15 @@
 
 
 
+## v0.4.1 (2024-01-14)
+
+### Fix
+
+* fix: remove unnecessary noqa (#54)
+
+- CI has started to complain about this ([`2387b18`](https://github.com/abid-mujtaba/testing-fixtures/commit/2387b186ef7b5fed05dab521465fd1ba89f48e98))
+
+
 ## v0.4.0 (2023-12-09)
 
 ### Chore
