@@ -75,7 +75,7 @@ class Fixture(Generic[Y, D]):
 
         self._entries = 0  # Keep track of rentrance
 
-    def set(self, *d_args: D.args, **d_kwargs: D.kwargs) -> Self:  # noqa: A003
+    def set(self, *d_args: D.args, **d_kwargs: D.kwargs) -> Self:
         """Set the args and kwargs passed down to the fixture definition."""
         self.args = d_args
         self.kwargs = d_kwargs
