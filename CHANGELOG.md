@@ -25,7 +25,7 @@
 
 ### Documentation
 
-* docs: added notes on evolution uptill Nov 2023 (#51)
+* docs: added notes on evolution up till Nov 2023 (#51)
 
 documented the new CI/CD pipeline ([`748e2c8`](https://github.com/abid-mujtaba/testing-fixtures/commit/748e2c8a98cf4355cefab41708b3334c10cfc151))
 
@@ -72,7 +72,7 @@ the category of bump ([`509ac27`](https://github.com/abid-mujtaba/testing-fixtur
 feat: bump version to incorporate new deps
 
 - typing-extensions was added as a dependency but was not incorporated
-  because the commit didn&#39;t have semantic style.
+  because the commit didn't have semantic style.
 - we have added a github action to validate that can no longer happen
 - still need to bump the version to include the new dep ([`6ba5364`](https://github.com/abid-mujtaba/testing-fixtures/commit/6ba536441a62bcec013f3f9c00b43b24cdf10773))
 
@@ -178,7 +178,7 @@ but we no longer need to build just to bump and release the new version ([`75b7c
 
 - rename file from deploy.yml to publish.yml since publication is
   the more accurate verb when it comes to Python and PyPI
-- add additional config to publish.yml for publising to PyPI if
+- add additional config to publish.yml for publishing to PyPI if
   publication to TestPyPI succeeds
 - remove dead code from pyproject.toml ([`f8a6cea`](https://github.com/abid-mujtaba/testing-fixtures/commit/f8a6cea0eab6cdf1ebd75b861bbfeec2b39ede67))
 
@@ -323,13 +323,13 @@ semantic-release creates commits with author &#34;semantic-release&#34; which is
 
 * docs: clarify branch protections required for deploy keys
 
-Deploy keys use the &#34;bypass branch protections&#34; permission which needs to be enabled in branch protecton for the key to work ([`c173c1c`](https://github.com/abid-mujtaba/testing-fixtures/commit/c173c1c255efeb5e2e8cb329b629416f68374212))
+Deploy keys use the &#34;bypass branch protections&#34; permission which needs to be enabled in branch protection for the key to work ([`c173c1c`](https://github.com/abid-mujtaba/testing-fixtures/commit/c173c1c255efeb5e2e8cb329b629416f68374212))
 
 ### Feature
 
 * feat: use deploy ssh key (#21)
 
-the per-workflow Github token is not working because the main branch has branch protections (including for admininstrators) while the github token has the saame permissions as the user who launched the workflow ([`19757f7`](https://github.com/abid-mujtaba/testing-fixtures/commit/19757f7694978d9ba79da35753c846aa939c9549))
+the per-workflow Github token is not working because the main branch has branch protections (including for admininstrators) while the github token has the same permissions as the user who launched the workflow ([`19757f7`](https://github.com/abid-mujtaba/testing-fixtures/commit/19757f7694978d9ba79da35753c846aa939c9549))
 
 * feat: semantic-release version only (#20)
 
@@ -337,7 +337,7 @@ the publish command does not version first and we are going to be uploading the 
 
 * feat: make semantic-release verbose (#19)
 
-the command passes in CD but doesn&#39;t seem to be doing much
+the command passes in CD but doesn't seem to be doing much
 increase verbosity to investigate ([`747efee`](https://github.com/abid-mujtaba/testing-fixtures/commit/747efeee9f811179030ec77fc76cba051a678277))
 
 * feat: use default build command (#15)
@@ -384,7 +384,7 @@ re-add the build command (removing it removes the build step) ([`e0bd802`](https
 - in CI (Github Action) the interpreter is available as just plain &#39;python&#39;
 - remove the explicit build step since semantic-release will be doing the building AFTER it has bumped the version ([`86421d3`](https://github.com/abid-mujtaba/testing-fixtures/commit/86421d3c2d8a37e2146577a9760aa30a26cf426f))
 
-* fix: semantic-release configuratioon (#10)
+* fix: semantic-release configuration (#10)
 
 - semantic-release expects the github token to be present in the GH_TOKEN env var
 - Configure the git user and email to belong to Github Actions so that the commit pushed by semantic-release is correctly attributed ([`8b7e9bb`](https://github.com/abid-mujtaba/testing-fixtures/commit/8b7e9bb5d8febb92aa36e4e9e21a603fbfe6c838))
@@ -443,7 +443,7 @@ is a primary function of this repo. ([`2d52176`](https://github.com/abid-mujtaba
 
 * Rename project (use hyphen) and add home page (github) ([`127628e`](https://github.com/abid-mujtaba/testing-fixtures/commit/127628e511612b437e6a05fc3273f2f8f2a56549))
 
-* Update pyproject in preparation for pulication ([`8edbe6c`](https://github.com/abid-mujtaba/testing-fixtures/commit/8edbe6c2c6127582af6016c3e7d4525c64f9cfbf))
+* Update pyproject in preparation for publication ([`8edbe6c`](https://github.com/abid-mujtaba/testing-fixtures/commit/8edbe6c2c6127582af6016c3e7d4525c64f9cfbf))
 
 * Add py.typed to testing.fixtures package ([`ee77885`](https://github.com/abid-mujtaba/testing-fixtures/commit/ee77885cfa2c05788795103c7382cb7c08f20e13))
 
@@ -476,7 +476,7 @@ is a primary function of this repo. ([`2d52176`](https://github.com/abid-mujtaba
 * Refactor integration tests to use new fixtures
 
 - Remove old implementation of tunable-fixtures.
-- Refactor commong utilities into a separate utils module. ([`fa41673`](https://github.com/abid-mujtaba/testing-fixtures/commit/fa41673a0aec33bc2e7f96cf6f0bba9a217f8ef7))
+- Refactor common utilities into a separate utils module. ([`fa41673`](https://github.com/abid-mujtaba/testing-fixtures/commit/fa41673a0aec33bc2e7f96cf6f0bba9a217f8ef7))
 
 * Move fixture module to top-level while allowing import from the tests ([`5e151d7`](https://github.com/abid-mujtaba/testing-fixtures/commit/5e151d763872f3fd72c21de7dc1fdac8f6730520))
 
@@ -602,7 +602,7 @@ is a primary function of this repo. ([`2d52176`](https://github.com/abid-mujtaba
 
 * Add incomplete handler for /compute end-point (parses request payload) ([`2194661`](https://github.com/abid-mujtaba/testing-fixtures/commit/219466128accc75766e48885b350bc58259a7ef2))
 
-* Add healtcheck (netcat) to server ([`1cb8b54`](https://github.com/abid-mujtaba/testing-fixtures/commit/1cb8b54c5f6318c0cb1f1acddedf6fafa06769cb))
+* Add healthcheck (netcat) to server ([`1cb8b54`](https://github.com/abid-mujtaba/testing-fixtures/commit/1cb8b54c5f6318c0cb1f1acddedf6fafa06769cb))
 
 * Add failing first test for /compute end-point ([`a60ee5e`](https://github.com/abid-mujtaba/testing-fixtures/commit/a60ee5e6ac79273fb754b94fe9c50e5c5206be4e))
 

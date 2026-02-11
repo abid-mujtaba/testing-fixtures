@@ -11,7 +11,7 @@ a broad consensus was achieved on the need for a new approach roughly along the 
 It was decided to approach the Pytest maintainers first before a new library was produced.
 
 Subsequently, @pganssle connected @abid-mujtaba with @Zac-HD (Pytest core developer and
-maintainer of Hypthesis) over lunch at the conference (afternoon of Sun Apr 23, 2023).
+maintainer of Hypothesis) over lunch at the conference (afternoon of Sun Apr 23, 2023).
 @Zac-HD was in general agreement with the proposal in this repo.
 He suggested that a 2-pronged approach be taken:
 

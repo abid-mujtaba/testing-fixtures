@@ -16,7 +16,7 @@ def create_temp_dir() -> FixtureDefinition[Path]:
 
 @fixture
 def create_temp_cwd() -> FixtureDefinition[Path]:
-    """Create a temporrary directory and switch the cwd to it."""
+    """Create a temporary directory and switch the cwd to it."""
     original_cwd = Path.cwd().absolute()
 
     with TemporaryDirectory() as temp_dir:

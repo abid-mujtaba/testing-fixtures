@@ -1,11 +1,11 @@
 """Fixtures for integration tests."""
 
-from typing import Iterator
+from collections.abc import Iterator
 
 import pytest
 
 
-@pytest.fixture()
+@pytest.fixture
 def base_url() -> Iterator[str]:
     """URL to flask server in composable environment."""
     return "http://server"

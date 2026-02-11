@@ -1,6 +1,7 @@
 """Test the new fixtures."""
 
 import pytest
+
 from testing.fixtures import noinject
 
 from .utils import (
@@ -103,7 +104,7 @@ def test_e(e: Eo) -> None:
 @fixture_f.set(Fi(42))
 @fixture_e
 def test_f(e: Eo, f: Fo) -> None:
-    """Test fixture_f and double injecion of fixture_e."""
+    """Test fixture_f and double injection of fixture_e."""
     print("Entering test f")
 
     assert e == 1
@@ -116,7 +117,7 @@ def test_f(e: Eo, f: Fo) -> None:
 #       state for fixture_b at the test site the fixture_b decorator here MUST
 #       wrap the fixture_b decorator here.
 #       This ensures that the state for fixture_b set here (at the test site) is the
-#       outer-most state when the coontext managers around the test are created and so
+#       outer-most state when the context managers around the test are created and so
 #       takes precedence.
 #       Reversing the order will result in an error.
 @fixture_b.set(Bi1(56), Bi2(9.7))
