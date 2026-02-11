@@ -5,17 +5,18 @@
 
 from __future__ import annotations
 
+import inspect
+from collections.abc import Callable, Generator
 from functools import partial, wraps
 from typing import (
     TYPE_CHECKING,
     Any,
-    Callable,
-    Generator,
+    Concatenate,
     Generic,
     TypeVar,
 )
 
-from typing_extensions import Concatenate, ParamSpec, Self
+from typing_extensions import ParamSpec, Self
 
 if TYPE_CHECKING:
     from types import TracebackType
@@ -170,7 +171,7 @@ class Fixture(Generic[Y, D]):
             if isinstance(value, StopIteration) and exc.__cause__ is value:
                 return False
             raise
-        except BaseException as exc:  # noqa: BLE001 pylint: disable=W0703
+        except BaseException as exc:
             # only re-raise if it's *not* the exception that was
             # passed to throw(), because __exit__() must not raise
             # an exception unless __exit__() itself failed.  But throw()
@@ -217,6 +218,30 @@ class Fixture(Generic[Y, D]):
             #           now context manager) as defined by the user
             with self as fg_value:
                 return test_function(fg_value, *t_args, **t_kwargs)
+
+        # Preserve the test function's def line number for proper IDE integration
+        # Check if already cached by inner decorators since inspect will return
+        # the inner decorator's line number instead
+        _def_lineno = getattr(test_function, "_def_lineno", None)
+
+        if _def_lineno is None:
+            try:
+                lines, start = inspect.getsourcelines(test_function)
+                # Scan for the actual def line (skipping decorators)
+                for i, line in enumerate(lines):
+                    if line.lstrip().startswith(("def ", "async def ")):
+                        _def_lineno = start + i
+                        break
+                else:
+                    # Fallback if no def line found (shouldn't happen)
+                    _def_lineno = test_function.__code__.co_firstlineno
+            except (OSError, TypeError):
+                # Fallback if source unavailable or unexpected function type
+                _def_lineno = test_function.__code__.co_firstlineno
+
+        # Cache for outer decorators and update code object
+        _inner._def_lineno = _def_lineno  # type: ignore[attr-defined]  # noqa: SLF001
+        _inner.__code__ = _inner.__code__.replace(co_firstlineno=_def_lineno)  # type: ignore[attr-defined]
 
         return _inner
 

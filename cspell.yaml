@@ -11,6 +11,8 @@ ignoreWords:
   - contextlib
   - dbpswd
   - envlist
+  - firstlineno
+  - getframe
   - healthcheck
   - importability
   - initdb
