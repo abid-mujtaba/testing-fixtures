@@ -32,7 +32,7 @@ The evolution of this project is being tracked in this [doc](./evolution.md).
 ### Tunability
 
 `pytest` fixtures lack a straight-forward mechanism for passing arguments to them from
-the test function defition site.
+the test function definition site.
 It is not uncommon to require that a specific piece of state be injected before
 running a specific test.
 A "tunable" fixture would solve this requirement.
@@ -62,7 +62,7 @@ bound to the value yielded by the fixture.
 This over-use of a single name is evident every time one is choosing the name for
 the fixture + variable.
 Does one name it for the variable or for the operation that the fixture carries out
-whose side-effect is the value in the varible e.g.
+whose side-effect is the value in the variable e.g.
 `add_portfolio` vs `portfolio_name`.
 
 ### Type Annotation
@@ -84,7 +84,7 @@ We provide a prototype for a new type of fixtures beyond what is provided by `py
 - Works seamlessly with `pytest`.
 - Importable from another module (no more `conftest.py`).
 - Composable.
-  One fixture can be connected to another fixture and recieve a value from it.
+  One fixture can be connected to another fixture and receive a value from it.
 - Tunable.
   Fixtures definitions can declare parameters.
   These parameters can either be provided at **either**

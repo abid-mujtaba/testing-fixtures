@@ -9,7 +9,7 @@ it bumps the version (and modifies the changelog).
 
 There are a couple of possible solutions to this.
 
-Unfortunately both solutions require the branch protection to **allow** admin uers
+Unfortunately both solutions require the branch protection to **allow** admin users
 the ability to bypass branch protections.
 To stop yourself from mistakenly pushing to the protected `main` branch from the CLI
 one can use a simple hack: `git config --global branch.main.pushRemote no_push`.
@@ -26,7 +26,7 @@ the required permission to push commits to a protected branch.
 
 ### Create Personal Access Token
 
-1. In Github nagivate to (Personal) Settings > Developer Settings >
+1. In Github navigate to (Personal) Settings > Developer Settings >
    Personal Access Tokens > Fine-grained tokens > Generate new token
 1. Limit repository access to just this repo.
 1. Set the following Repository Permissions:

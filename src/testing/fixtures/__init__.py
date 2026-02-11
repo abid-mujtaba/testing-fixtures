@@ -73,7 +73,7 @@ class Fixture(Generic[Y, D]):
         self.args: tuple[Any, ...] = ()
         self.kwargs: dict[str, Any] = {}
 
-        self._entries = 0  # Keep track of rentrance
+        self._entries = 0  # Keep track of reentrance
 
     def set(self, *d_args: D.args, **d_kwargs: D.kwargs) -> Self:
         """Set the args and kwargs passed down to the fixture definition."""
@@ -109,7 +109,7 @@ class Fixture(Generic[Y, D]):
                 self._value = next(self._generator)
 
             except StopIteration:
-                err_msg = "generator didn't yield"
+                err_msg = "generator did not yield"
                 raise RuntimeError(err_msg) from None
 
             else:
@@ -120,7 +120,7 @@ class Fixture(Generic[Y, D]):
 
     def _exit_no_exception(self) -> bool:
         """Handle exit when no exception was raised."""
-        if self._entries == 0:  # Last exit (in rentrance) so finish up generator
+        if self._entries == 0:  # Last exit (in reentrance) so finish up generator
             try:
                 next(self._generator)
             except StopIteration:
@@ -145,7 +145,7 @@ class Fixture(Generic[Y, D]):
         if typ is None:
             return self._exit_no_exception()
 
-        # An excception has been raised
+        # An exception has been raised
         if value is None:
             # Need to force instantiation so we can reliably
             # tell if we get the same exception back
@@ -225,7 +225,7 @@ class Fixture(Generic[Y, D]):
         if self._entries != 0:
             err_msg = (
                 f"Fixture {self._func.__name__} destroyed while "
-                "all rentries were not exited"
+                "all reentries were not exited"
             )
             raise RuntimeError(err_msg)
 
