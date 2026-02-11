@@ -54,7 +54,7 @@ upload_to_release = true    # auto create Github Release
 [tool.mypy]
 strict = true
 
-[tool.ruff]
+[tool.ruff.lint]
 select = ["ALL"]
 ignore = [
     "D203",  # First 4 rules are mutually incompatible and incompatible with ruff format
@@ -62,10 +62,9 @@ ignore = [
     "COM812",
     "ISC001",
     "FBT",  # Boolean values in function signatures
-    "ANN101",  # Annotate `self` parameter of class methods
 ]
 
-[tool.ruff.per-file-ignores]
+[tool.ruff.lint.per-file-ignores]
 "**/tests/**/*.py" = [
     "S101"  # assert is allowed in tests
 ]
@@ -73,8 +72,3 @@ ignore = [
     "T201"  # we are using print to track execution path
 ]
 
-[tool.pylint.'MESSAGE CONTROL']
-disable = [
-    "invalid-name",
-    "no-else-raise",  # conflicts with ruff
-]
