@@ -4,9 +4,12 @@ from __future__ import annotations
 
 import os
 from contextlib import contextmanager
-from typing import Any, Iterator, cast
+from typing import TYPE_CHECKING, Any, cast
 
 import psycopg
+
+if TYPE_CHECKING:
+    from collections.abc import Iterator
 
 DB_USER = "postgres"
 DB_PASSWORD = os.environ["POSTGRES_PASSWORD"]
@@ -42,6 +45,6 @@ def get_operation(uuid: int) -> str | None:
         record = cursor.fetchone()
 
     if record:
-        return cast(str, record["operation"])
+        return cast("str", record["operation"])
 
     return None  # indicates that uuid is not in table
