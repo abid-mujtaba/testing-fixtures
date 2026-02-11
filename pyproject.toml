@@ -4,14 +4,14 @@ build-backend = "hatchling.build"
 
 [project]
 name = "testing-fixtures"
-version = "0.4.1"
+version = "0.5.0"
 authors = [
     { name = "Abid H. Mujtaba", email = "abid.naqvi83@gmail.com" }
 ]
 description = "New approach to Python test fixtures (compatible with pytest)"
 keywords = ["tests", "testing", "fixture", "fixtures"]
 readme = "README.md"
-requires-python = ">=3.8"
+requires-python = ">=3.10"
 dependencies = [
     "typing-extensions"
 ]
