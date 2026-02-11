@@ -1,25 +1,18 @@
-# pylint: disable=no-else-return
 """Implementation of new fixtures module."""
-
-# pylint: disable=no-member
-
-from __future__ import annotations
 
 import inspect
 from collections.abc import Callable, Generator
 from functools import partial, wraps
+from types import TracebackType
 from typing import (
-    TYPE_CHECKING,
     Any,
     Concatenate,
     Generic,
     TypeVar,
+    cast,
 )
 
 from typing_extensions import ParamSpec, Self
-
-if TYPE_CHECKING:
-    from types import TracebackType
 
 D = ParamSpec("D")  # Parameters injected into fixture definition
 T = ParamSpec("T")  # Test function parameters
@@ -197,7 +190,7 @@ class Fixture(Generic[Y, D]):
         """
         # Create a temporary reduced function to wrap the signature of the function
         # after it has been decorated
-        reduced_func = partial(test_function, None)
+        reduced_func = partial(test_function, cast("Y", None))
 
         # Store the fixture definition args and kwargs in the closure
         fixture_args = self.args

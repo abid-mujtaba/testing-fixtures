@@ -193,8 +193,8 @@ def test_line_number_preservation() -> None:
     assert (
         test_single_decorator.__code__.co_firstlineno
         == test_single_decorator._def_lineno
-    )  # type: ignore[attr-defined]
-    assert test_single_decorator._def_lineno == def_line_single  # type: ignore[attr-defined]
+    )
+    assert test_single_decorator._def_lineno == def_line_single
 
 
 def test_line_number_preservation_stacked() -> None:
@@ -227,7 +227,7 @@ def test_line_number_preservation_stacked() -> None:
     assert hasattr(test_stacked_decorators, "_def_lineno")
     assert (
         test_stacked_decorators.__code__.co_firstlineno
-        == test_stacked_decorators._def_lineno  # type: ignore[attr-defined]
+        == test_stacked_decorators._def_lineno
     )
     # Verify the line number points to def, not the first decorator
-    assert test_stacked_decorators._def_lineno == def_line_stacked  # type: ignore[attr-defined]
+    assert test_stacked_decorators._def_lineno == def_line_stacked
