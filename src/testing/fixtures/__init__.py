@@ -9,7 +9,6 @@ from typing import (
     Concatenate,
     Generic,
     TypeVar,
-    cast,
 )
 
 from typing_extensions import ParamSpec, Self
@@ -21,6 +20,68 @@ Y = TypeVar("Y")  # Type of value yielded by fixture generator to be injected in
 # Fixture definitions are Generators (not just Iterators) since they need to support
 # throwing exceptions to the yield statement
 FixtureDefinition = Generator[Y, None, None]
+
+
+def preserve_metadata(
+    original: Callable[..., Any], noinject: bool = False
+) -> Callable[[Callable[..., Any]], Callable[..., Any]]:
+    """
+    Apply @wraps and preserve the def line number.
+
+    This ensures VS Code's Python test explorer places the run/status icon at the
+    correct line (the def keyword) rather than at decorators or end of function.
+
+    Args:
+        original: The original test function to extract def line number from
+        noinject: Whether the fixture being decorated is non-injecting
+                  (absorbs yielded value).
+
+    Returns:
+        A decorator function
+
+    """
+
+    def decorator(inner: Callable[..., Any]) -> Callable[..., Any]:
+
+        # Use functools.wraps to copy metadata from the function being decorated to
+        # the output function
+        if not noinject:
+            # Create a temporary reduced function for wrapping.
+            # It removes the injected variable since after decoration that variable
+            # is no longer visible
+            reduced_func = partial(original, None)
+            inner = wraps(reduced_func)(inner)
+        else:
+            inner = wraps(original)(inner)
+
+        # Preserve the test function's def line number for proper IDE integration
+        # Check if already cached by inner decorators to avoid redundant inspect calls
+        _def_lineno = getattr(original, "_def_lineno", None)
+
+        if _def_lineno is None:
+            try:
+                lines, start = inspect.getsourcelines(original)
+                # Scan for the actual def line (skipping decorators)
+                for i, line in enumerate(lines):
+                    if line.lstrip().startswith(("def ", "async def ")):
+                        _def_lineno = start + i
+                        break
+                else:
+                    # Fallback if no def line found (shouldn't happen)
+                    _def_lineno = original.__code__.co_firstlineno
+            except (OSError, TypeError):
+                # Fallback if source unavailable or unexpected function type
+                _def_lineno = original.__code__.co_firstlineno
+
+        # Cache for outer decorators and update code object
+        inner._def_lineno = _def_lineno  # type: ignore[attr-defined]  # noqa: SLF001
+        inner.__code__ = inner.__code__.replace(  # type: ignore[attr-defined]
+            co_firstlineno=_def_lineno
+        )
+
+        return inner
+
+    return decorator
 
 
 class Fixture(Generic[Y, D]):
@@ -188,10 +249,6 @@ class Fixture(Generic[Y, D]):
         func, now context manager) as the first argument of the test function.
         After decoration the test appears to have one less argument (the first one).
         """
-        # Create a temporary reduced function to wrap the signature of the function
-        # after it has been decorated
-        reduced_func = partial(test_function, cast("Y", None))
-
         # Store the fixture definition args and kwargs in the closure
         fixture_args = self.args
         fixture_kwargs = self.kwargs
@@ -199,7 +256,7 @@ class Fixture(Generic[Y, D]):
         # Now that the values have been closed over we can delete from the object
         self.reset()
 
-        @wraps(reduced_func)
+        @preserve_metadata(test_function)
         def _inner(*t_args: T.args, **t_kwargs: T.kwargs) -> None:
             """Compose fixture and inject yielded value into wrapped test function."""
             # Use the closed over values to set the fixture definition args and kwargs
@@ -211,30 +268,6 @@ class Fixture(Generic[Y, D]):
             #           now context manager) as defined by the user
             with self as fg_value:
                 return test_function(fg_value, *t_args, **t_kwargs)
-
-        # Preserve the test function's def line number for proper IDE integration
-        # Check if already cached by inner decorators since inspect will return
-        # the inner decorator's line number instead
-        _def_lineno = getattr(test_function, "_def_lineno", None)
-
-        if _def_lineno is None:
-            try:
-                lines, start = inspect.getsourcelines(test_function)
-                # Scan for the actual def line (skipping decorators)
-                for i, line in enumerate(lines):
-                    if line.lstrip().startswith(("def ", "async def ")):
-                        _def_lineno = start + i
-                        break
-                else:
-                    # Fallback if no def line found (shouldn't happen)
-                    _def_lineno = test_function.__code__.co_firstlineno
-            except (OSError, TypeError):
-                # Fallback if source unavailable or unexpected function type
-                _def_lineno = test_function.__code__.co_firstlineno
-
-        # Cache for outer decorators and update code object
-        _inner._def_lineno = _def_lineno  # type: ignore[attr-defined]  # noqa: SLF001
-        _inner.__code__ = _inner.__code__.replace(co_firstlineno=_def_lineno)  # type: ignore[attr-defined]
 
         return _inner
 
@@ -362,6 +395,7 @@ def noinject(
         fixture_args = fixture_.args
         fixture_kwargs = fixture_.kwargs
 
+        @preserve_metadata(test_function, noinject=True)
         def _inner(*args: T.args, **kwargs: T.kwargs) -> None:
             """Run test function while ignoring the value yielded by the fixture."""
             fixture_.set(*fixture_args, **fixture_kwargs)

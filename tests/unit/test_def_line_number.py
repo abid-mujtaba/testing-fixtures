@@ -1,10 +1,14 @@
 """
-Test the logic for adjusting the def line number when
-a test is decorated with one or more fixtures.
+Test the logic for incorporating the correct def line number.
+
+VS Code should detect the correct line number for the test function definition even
+if it has one or more fixture decorators applied to it.
 """
 
 import inspect
 import sys
+
+from testing.fixtures import noinject
 
 from .utils import (
     Ao,
@@ -88,4 +92,36 @@ def test_line_number_preservation_stacked() -> None:
     )
     # Verify the line number points to def, not the first decorator
     assert test_stacked_decorators._def_lineno == def_line_stacked
+
+
+def test_line_number_preservation_noinject() -> None:
+    """Test that noinject also preserves the def line number."""
+    # GIVEN
+    def_line_noinject = 0  # Will be set below
+
+    # WHEN
+    @noinject(fixture_a)  # Decorator line (should NOT be the reported line)
+    def test_noinject_decorator() -> None:  # This is the def line we want preserved
+        """Test with noinject decorator."""
+
+    # THEN
+    # Capture what line the def was on by finding it in our own source
+    current_frame = sys._getframe()
+    test_source, test_start = inspect.getsourcelines(current_frame.f_code)
+
+    # Find where test_noinject_decorator def is in our test source
+    for i, line in enumerate(test_source):
+        if "def test_noinject_decorator" in line and line.lstrip().startswith("def "):
+            def_line_noinject = test_start + i
+            break
+
+    # The decorated function should have co_firstlineno pointing to the def line
+    assert hasattr(test_noinject_decorator, "_def_lineno")
+    assert (
+        test_noinject_decorator.__code__.co_firstlineno
+        == test_noinject_decorator._def_lineno
+    )
+    assert test_noinject_decorator._def_lineno == def_line_noinject
+
+
 ""
