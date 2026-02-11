@@ -3,7 +3,7 @@
 import inspect
 from collections.abc import Callable, Generator
 from functools import partial, wraps
-from types import TracebackType
+from types import FunctionType, TracebackType
 from typing import (
     Any,
     Concatenate,
@@ -43,17 +43,6 @@ def preserve_metadata(
 
     def decorator(inner: Callable[..., Any]) -> Callable[..., Any]:
 
-        # Use functools.wraps to copy metadata from the function being decorated to
-        # the output function
-        if not noinject:
-            # Create a temporary reduced function for wrapping.
-            # It removes the injected variable since after decoration that variable
-            # is no longer visible
-            reduced_func = partial(original, None)
-            inner = wraps(reduced_func)(inner)
-        else:
-            inner = wraps(original)(inner)
-
         # Preserve the test function's def line number for proper IDE integration
         # Check if already cached by inner decorators to avoid redundant inspect calls
         _def_lineno = getattr(original, "_def_lineno", None)
@@ -72,6 +61,29 @@ def preserve_metadata(
             except (OSError, TypeError):
                 # Fallback if source unavailable or unexpected function type
                 _def_lineno = original.__code__.co_firstlineno
+
+        # Create a corrected copy of original with proper line number for __wrapped__
+        # We will need to pass this to functools.wraps because VS Code can in certain
+        # cases drill down to the .__wrapped__ attributed of a test function and
+        # use it to determine the line number for the test run/status icon.
+        corrected_original = FunctionType(
+            original.__code__.replace(co_firstlineno=_def_lineno),
+            original.__globals__,
+            original.__name__,
+            original.__defaults__,
+            original.__closure__,
+        )
+
+        # Use functools.wraps to copy metadata from the function being decorated to
+        # the output function
+        if not noinject:
+            # Create a temporary reduced function for wrapping.
+            # It removes the injected variable since after decoration that variable
+            # is no longer visible
+            reduced_func = partial(corrected_original, None)
+            inner = wraps(reduced_func)(inner)
+        else:
+            inner = wraps(corrected_original)(inner)
 
         # Cache for outer decorators and update code object
         inner._def_lineno = _def_lineno  # type: ignore[attr-defined]  # noqa: SLF001

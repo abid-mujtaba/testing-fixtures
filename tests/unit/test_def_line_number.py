@@ -124,4 +124,41 @@ def test_line_number_preservation_noinject() -> None:
     assert test_noinject_decorator._def_lineno == def_line_noinject
 
 
-""
+def test_wrapped_chain_has_correct_line_number() -> None:
+    """Test that __wrapped__ chain also has correct line number for IDE tools."""
+    # GIVEN
+    def_line_wrapped = 0  # Will be set below
+
+    # WHEN
+    @fixture_a  # Decorator line (should NOT be the reported line)
+    def test_wrapped_chain(  # This is the def line we want preserved
+        a: Ao,
+    ) -> None:
+        """Test __wrapped__ chain preservation."""
+
+    # THEN
+    # Capture what line the def was on by finding it in our own source
+    current_frame = sys._getframe()
+    test_source, test_start = inspect.getsourcelines(current_frame.f_code)
+
+    # Find where test_wrapped_chain def is in our test source
+    # Use a more specific search to avoid matching the outer function name
+    for i, line in enumerate(test_source):
+        if "def test_wrapped_chain(" in line and line.lstrip().startswith("def "):
+            def_line_wrapped = test_start + i
+            break
+
+    # The wrapper should have the correct line number
+    assert test_wrapped_chain.__code__.co_firstlineno == def_line_wrapped
+
+    # VS Code/pytest may follow the __wrapped__ chain, so verify it's also correct
+    assert hasattr(test_wrapped_chain, "__wrapped__")
+    wrapped = test_wrapped_chain.__wrapped__
+
+    # For injecting fixtures, __wrapped__ is a partial object
+    if hasattr(wrapped, "func"):
+        # The underlying function should also have the correct line number
+        assert wrapped.func.__code__.co_firstlineno == def_line_wrapped
+    elif hasattr(wrapped, "__code__"):
+        # For regular functions, check the code object directly
+        assert wrapped.__code__.co_firstlineno == def_line_wrapped
