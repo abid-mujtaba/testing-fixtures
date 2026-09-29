@@ -19,14 +19,14 @@ jobs:
 
     steps:
       - name: Set up Python 3.14
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@v7
         with:
           python-version: 3.14
 
       - name: Pre-requisites
         run: python -m pip install build
 
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v7
 
       - name: Build
         run: python -m build
@@ -49,14 +49,14 @@ jobs:
 
     steps:
       - name: Set up Python 3.14
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v7
         with:
           python-version: 3.14
 
       - name: Pre-requisites
         run: python -m pip install build
 
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v7
 
       - name: Build
         run: python -m build
