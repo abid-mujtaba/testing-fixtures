@@ -195,6 +195,7 @@ The following four decorators are provided for defining these fixtures:
        """Fixture that uses a late-injected fixture_b and a value from the test site."""
        yield {"b": b, "g": g}
 
+
    @fixture_b.set(Bi1(56), Bi2(9.7))
    @fixture_g.set(Gi(41))
    def test_g(g: Go, b: Bo) -> None:
