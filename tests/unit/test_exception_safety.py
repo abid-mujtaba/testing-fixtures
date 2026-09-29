@@ -58,3 +58,23 @@ def test_fixture_usable_after_failed_setup() -> None:
         assert value == "value"
 
     assert calls["count"] == EXPECTED_CALL_COUNT_AFTER_RECOVERY
+
+
+def test_generator_did_not_yield_resets_entries() -> None:
+    """
+    A generator that never yields must also leave the Fixture reusable.
+
+    This is the sibling of the setup-exception case above: `next()` raises
+    `StopIteration` instead of propagating a caller exception, but the same
+    entry-count bookkeeping applies.
+    """
+
+    @fixture
+    def no_yield() -> FixtureDefinition[str]:
+        return
+        yield  # pragma: no cover - never reached
+
+    with pytest.raises(RuntimeError, match="generator did not yield"), no_yield:
+        pass
+
+    assert no_yield._entries == 0

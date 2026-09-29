@@ -154,6 +154,17 @@ class Fixture(Generic[Y, D]):
         self.args = ()
         self.kwargs = {}
 
+    def _reset_after_failed_entry(self) -> None:
+        """
+        Reset (kw)args and entry count after a failed first entry.
+
+        Without this a failed entry leaves this (module-level, shared) Fixture
+        instance stuck with a nonzero entry count and no completed setup, silently
+        corrupting every later, independent use of it.
+        """
+        self.reset()
+        self._entries = 0
+
     def __enter__(self) -> Y:
         """Deal with re-entrance in this context manager."""
         self._entries += 1
@@ -167,8 +178,7 @@ class Fixture(Generic[Y, D]):
                 # Reset the (kw)args to be sure
                 # Reset the entry count so that the next usage of the fixture (in a
                 # test) works properly
-                self.reset()
-                self._entries = 0
+                self._reset_after_failed_entry()
 
                 raise
 
@@ -176,8 +186,19 @@ class Fixture(Generic[Y, D]):
                 self._value = next(self._generator)
 
             except StopIteration:
+                self._reset_after_failed_entry()
+
                 err_msg = "generator did not yield"
                 raise RuntimeError(err_msg) from None
+
+            except BaseException:
+                # The fixture's setup code raised before yielding (a genuine bug in
+                # the fixture itself, not a StopIteration). Reset state so this
+                # Fixture instance remains usable rather than being left permanently
+                # stuck mid-entry.
+                self._reset_after_failed_entry()
+
+                raise
 
             else:
                 return self._value
