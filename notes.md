@@ -48,7 +48,7 @@ Since we want to use the PAT we need to configure the checkout action to use it.
 
 ```yml
 - name: Checkout repository
-  uses: actions/checkout@v2
+  uses: actions/checkout@v7
   with:
     fetch-depth: 0  # semantic-release needs access to all previous commits
     token: ${{ secrets.PAT }}
