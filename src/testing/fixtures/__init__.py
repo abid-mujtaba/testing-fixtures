@@ -1,4 +1,4 @@
-"""Implementation of new fixtures module."""
+"""Implementation of Fixture class used to create fixtures."""
 
 import inspect
 from collections.abc import Callable, Generator
