@@ -62,6 +62,7 @@ ignore = [
     "COM812",
     "ISC001",
     "FBT",  # Boolean values in function signatures
+    "CPY001",
 ]
 
 [tool.ruff.lint.per-file-ignores]
